@@ -1,0 +1,59 @@
+{
+  "name": "8base",
+  "version": "0.0.1",
+  "description": "8base serverless subscription library",
+  "author": "8base",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "example": "node ./dist/example/index.js",
+    "test": "jest --no-cache --coverage",
+    "build": "tsc",
+    "start": "npm run build -- --watch",
+    "tslint": "tslint -c tslint.json -p tsconfig.json --type-check",
+    "upload": "npm version patch && git push --follow-tags",
+    "preversion": "npm run tslint"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "transform": {
+      "\\.(gql|graphql)$": "jest-transform-graphql",
+      "^.+\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
+    },
+    "testMatch": [
+      "**/test/**/*.test.(ts|js)"
+    ],
+    "clearMocks": true,
+    "setupTestFrameworkScriptFile": "./test/setup.ts"
+  },
+  "dependencies": {
+    "mqtt": "^2.15.3",
+    "typescript": "^2.5.1",
+    "eventemitter3": "^3.0.1",
+    "aws-sdk": "^2.202.0"
+  },
+  "devDependencies": {
+    "@types/node": "^9.3.0",
+    "@types/aws-lambda": "^0.0.27",
+    "@types/graphql": "^0.12.1",
+    "@types/request": "^2.47.0",
+    "@types/uuid": "^3.4.3",
+    "@types/paho-mqtt": "^1.0.3",
+    "@types/mqtt": "^2.5.0",
+    "awesome-typescript-loader": "^3.2.3",
+    "nodemon": "^1.11.0",
+    "npm": "5.3.0",
+    "tslib": "^1.8.0",
+    "tslint": "^5.7.0",
+    "symbol-observable": "^1.2.0"
+  }
+}
