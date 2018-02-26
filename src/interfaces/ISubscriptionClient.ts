@@ -15,29 +15,6 @@ export interface ICliSubscriptionClient {
 }
 
 export interface ISubscriptionClient {
-    close(isForced: boolean, closedByUser: boolean): void;
-
     request(request: OperationOptions): Observable<ExecutionResult>;
 
-    on(eventName: string, callback: EventEmitter.ListenerFn, context?: any): Function;
-
-    onConnected(callback: EventEmitter.ListenerFn, context?: any): Function;
-
-    onConnecting(callback: EventEmitter.ListenerFn, context?: any): Function;
-
-    onDisconnected(callback: EventEmitter.ListenerFn, context?: any): Function;
-
-    onReconnected(callback: EventEmitter.ListenerFn, context?: any): Function;
-
-    onReconnecting(callback: EventEmitter.ListenerFn, context?: any): Function;
-
-
-    unsubscribe(opId: string): void;
-
-    unsubscribeAll(): void;
-
-    /* async */ applyMiddlewares(options: OperationOptions): Promise<OperationOptions>;
-
-
-    use(middlewares: Middleware[]): ISubscriptionClient;
 }

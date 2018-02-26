@@ -41,62 +41,6 @@ export class SubscriptionClient implements ISubscriptionClient{
         Private functions
     */
 
-    private setupMQTT() {
-        const connectOptions: Paho.MQTT.ConnectionOptions = {
-            onSuccess: () => {
-                this.status = ConnectionStatus.Connected;
-                // this.closedByUser = false;
-                // this.eventEmitter.emit(this.reconnecting ? 'reconnecting' : 'connecting'); // why here and not earlier?
-                
-//                const payload: ConnectionParams =
-//                    typeof this.connectionParams === 'function' ? this.connectionParams() : this.connectionParams;
-
-                // Send CONNECTION_INIT message, no need to wait for connection to success (reduce roundtrips)
-                const clientIdTopic = "test-topic";// this.appPrefix + '/in/' + this.clientId;
-                
-                console.log('successfully connected');
-
-                this.mqttClient.subscribe(clientIdTopic,
-                    {
-                        qos: 1
-                    }, 
-                    (err: Error, data: any) => {
-                        if (err) {
-                            return console.log('subscribe failure', err);
-                        }
-                        // this.debug && console.log(`subscribing to ${clientIdTopic}`);
-                        this.sendMessage(undefined, MessageTypes.GQL_CONNECTION_INIT, /*payload*/ {});
-                        this.flushUnsentMessagesQueue();
-                    }
-                );
-            },
-            useSSL: false,// requestUrl.substring(0, 2) === 'wss',
-            timeout: 1000, //this.timeout,
-            mqttVersion: 4,
-            onFailure: this.onClose.bind(this),
-        };
-
-        
-        this.mqttClient.on("error", this.onClose.bind(this));
-        this.mqttClient.on("message", this.processReceivedData.bind(this));
-
-        const clientIdTopic = "test-topic";// this.appPrefix + '/in/' + this.clientId;
-        this.mqttClient.subscribe(clientIdTopic,
-            {
-                qos: 1
-            }, 
-            (err: Error, data: any) => {
-                if (err) {
-                    return console.log('subscribe failure', err);
-                }
-                console.log(`subscribing to ${clientIdTopic}`);
-                console.log("data: " + JSON.stringify(data, null, 2));
-                this.sendMessage(undefined, MessageTypes.GQL_CONNECTION_INIT, /*payload*/ {});
-            });
-
-        this.mqttClient = MQTT.connect()
-    }
-
     private async connect() {
         this.urlResolver.resolve()
             .then((url: string) => {
@@ -138,41 +82,47 @@ export class SubscriptionClient implements ISubscriptionClient{
         const getObserver = this.getObserver.bind(this);
         const executeOperation = this.executeOperation.bind(this);
         const unsubscribe = this.unsubscribe.bind(this);
-
+    
         let opId: string;
-
+    
         return {
-            subscribe(
-                observerOrNext: ((Observer<ExecutionResult>) | ((v: ExecutionResult) => void)),
-                onError?: (error: Error) => void,
-                onComplete?: () => void,
-            ) {
-                const observer = getObserver(observerOrNext, onError, onComplete);
-                opId = executeOperation({
-                    query: request.query,
-                    variables: request.variables,
-                    operationName: request.operationName,
-                }, function (error: Error[], result: any) {
-                    if (error === null && result === null) {
-                        observer.complete();
-                    } else if (error) {
-                        observer.error(error[0]);
-                    } else {
-                        observer.next(result);
-                    }
-                });
-
-                return {
-                    unsubscribe: () => {
-                        if (opId) {
-                            unsubscribe(opId);
-                            opId = null;
-                        }
-                    },
-                };
-            },
+          [$$observable]() {
+            return this;
+          },
+          subscribe(
+            observerOrNext: ((Observer<ExecutionResult>) | ((v: ExecutionResult) => void)),
+            onError?: (error: Error) => void,
+            onComplete?: () => void,
+          ) {
+            const observer = getObserver(observerOrNext, onError, onComplete);
+    
+            opId = executeOperation(request, (error: Error[], result: any) => {
+              if ( error === null && result === null ) {
+                if ( observer.complete ) {
+                  observer.complete();
+                }
+              } else if (error) {
+                if ( observer.error ) {
+                  observer.error(error[0]);
+                }
+              } else {
+                if ( observer.next ) {
+                  observer.next(result);
+                }
+              }
+            });
+    
+            return {
+              unsubscribe: () => {
+                if ( opId ) {
+                  unsubscribe(opId);
+                  opId = null;
+                }
+              },
+            };
+          },
         };
-    }
+      }
 
 
     public on(eventName: string, callback: EventEmitter.ListenerFn, context?: any): Function {
@@ -181,26 +131,6 @@ export class SubscriptionClient implements ISubscriptionClient{
         return () => {
             handler.off(eventName, callback, context);
         };
-    }
-
-    public onConnected(callback: EventEmitter.ListenerFn, context?: any): Function {
-        return this.on('connected', callback, context);
-    }
-
-    public onConnecting(callback: EventEmitter.ListenerFn, context?: any): Function {
-        return this.on('connecting', callback, context);
-    }
-
-    public onDisconnected(callback: EventEmitter.ListenerFn, context?: any): Function {
-        return this.on('disconnected', callback, context);
-    }
-
-    public onReconnected(callback: EventEmitter.ListenerFn, context?: any): Function {
-        return this.on('reconnected', callback, context);
-    }
-
-    public onReconnecting(callback: EventEmitter.ListenerFn, context?: any): Function {
-        return this.on('reconnecting', callback, context);
     }
 
 
@@ -215,45 +145,6 @@ export class SubscriptionClient implements ISubscriptionClient{
         //Object.keys(this.operations).forEach(subId => {
         //    this.unsubscribe(subId);
         //});
-    }
-
-    public applyMiddlewares(options: OperationOptions): Promise<OperationOptions> {
-        return new Promise((resolve, reject) => {
-            /*const queue = (funcs: Middleware[], scope: any) => {
-                const next = (error?: any) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        if (funcs.length > 0) {
-                            const f = funcs.shift();
-                            if (f) {
-                                f.applyMiddleware.apply(scope, [options, next]);
-                            }
-                        } else {
-                            resolve(options);
-                        }
-                    }
-                };
-                next();
-            };
-
-            queue([...this.middlewares], this);
-            */
-        });
-    }
-
-
-    public use(middlewares: Middleware[]): ISubscriptionClient {
-        /*
-        middlewares.map((middleware) => {
-            if (typeof middleware.applyMiddleware === 'function') {
-                this.middlewares.push(middleware);
-            } else {
-                throw new Error('Middleware must implement the applyMiddleware function.');
-            }
-        });
-        */
-        return this;
     }
 
     private executeOperation(options: OperationOptions, handler: (error: Error[], result?: any) => void): string {
@@ -396,7 +287,7 @@ export class SubscriptionClient implements ISubscriptionClient{
     }
 
     // send message, or queue it if connection is not open
-    // private sendMessageRaw(message: PahoMQTT.Message) {
+     private sendMessageRaw() {
     //     switch (this.status) {
     //         case ConnectionStatus.Connected:
     //             const serializedMessage = new Paho.MQTT.Message(
@@ -405,7 +296,7 @@ export class SubscriptionClient implements ISubscriptionClient{
     //             console.log('Sending message');
     //             console.log(message);
     //             serializedMessage.retained = false;
-    //             this.mqttClient.send(serializedMessage);
+                 this.mqttClient.send();
     //             break;
     //         case ConnectionStatus.Connecting:
     //             this.unsentMessagesQueue.push(message);
@@ -416,7 +307,7 @@ export class SubscriptionClient implements ISubscriptionClient{
     //             //         'is already closed. Message was: ${JSON.parse(serializedMessage)}.');
     //             // }
     //     }
-    // }
+    }
 
     private generateOperationId(): string {
         // return String(++this.nextOperationId);
