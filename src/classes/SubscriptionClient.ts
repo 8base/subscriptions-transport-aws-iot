@@ -18,14 +18,13 @@ export class SubscriptionClient implements ISubscriptionClient{
 
     private urlResolver: ISignedUrlResolver;
     private status: ConnectionStatus;
-
-    private eventEmitter: EventEmitter;
-
-    private clientId: string;
+    
     private mqttClient: MQTT.Client;
-
     private appPrefix: string;
-    private unsentMessagesQueue: Array<any>; // queued messages while websocket is opening.
+
+    private onNext: Function;
+    private onComplete: Function;
+    private onError: Function;
 
     constructor(urlResolver: ISignedUrlResolver) {
         if (!urlResolver) {
@@ -44,10 +43,7 @@ export class SubscriptionClient implements ISubscriptionClient{
     private async connect() {
         this.urlResolver.resolve()
             .then((url: string) => {
-                this.clientId = uuid.v4();
-                // this.mqttClient = new Paho.MQTT.Client(url, this.clientId);
-//                this.mqttClient
-//                 this.setupMQTT();
+                
                 this.mqttClient = MQTT.connect(url);
 
                 this.mqttClient.on("error", this.onClose.bind(this));
@@ -64,11 +60,7 @@ export class SubscriptionClient implements ISubscriptionClient{
                     }
                     console.log(`subscribing to ${clientIdTopic}`);
                     console.log("data: " + JSON.stringify(data, null, 2));
-                    this.sendMessage(undefined, MessageTypes.GQL_CONNECTION_INIT, /*payload*/ {});
                 });
-
-                
-                
             })
             .catch((err) => {
                 this.status = ConnectionStatus.Offline;
@@ -80,22 +72,19 @@ export class SubscriptionClient implements ISubscriptionClient{
 
     public request(request: OperationOptions): Observable<ExecutionResult> {
         const getObserver = this.getObserver.bind(this);
-        const executeOperation = this.executeOperation.bind(this);
         const unsubscribe = this.unsubscribe.bind(this);
     
         let opId: string;
     
         return {
-          [$$observable]() {
-            return this;
-          },
           subscribe(
             observerOrNext: ((Observer<ExecutionResult>) | ((v: ExecutionResult) => void)),
             onError?: (error: Error) => void,
             onComplete?: () => void,
           ) {
             const observer = getObserver(observerOrNext, onError, onComplete);
-    
+            
+
             opId = executeOperation(request, (error: Error[], result: any) => {
               if ( error === null && result === null ) {
                 if ( observer.complete ) {
@@ -125,14 +114,6 @@ export class SubscriptionClient implements ISubscriptionClient{
       }
 
 
-    public on(eventName: string, callback: EventEmitter.ListenerFn, context?: any): Function {
-        const handler = this.eventEmitter.on(eventName, callback, context);
-
-        return () => {
-            handler.off(eventName, callback, context);
-        };
-    }
-
 
     public unsubscribe(opId: string) {
         //if (this.operations[opId]) {
@@ -141,35 +122,19 @@ export class SubscriptionClient implements ISubscriptionClient{
         //}
     }
 
-    public unsubscribeAll() {
-        //Object.keys(this.operations).forEach(subId => {
-        //    this.unsubscribe(subId);
-        //});
-    }
-
     private executeOperation(options: OperationOptions, handler: (error: Error[], result?: any) => void): string {
-        /*
-        const opId = this.generateOperationId();
-        this.operations[opId] = { options: options, handler };
-        this.applyMiddlewares(options)
-            .then(processedOptions => {
-                this.checkOperationOptions(processedOptions, handler);
-                if (this.operations[opId]) {
-                    processedOptions.subscriptionName =
-                        (options.query as any).definitions[0].selectionSet.selections[0].name.value;
-                    // how reliable is this and is there a better way. I want the subscription name
-                    // so i dont have to create another index just to unsubscribe
-                    this.operations[opId] = { options: processedOptions, handler };
-                    this.sendMessage(opId, MessageTypes.GQL_START, processedOptions);
-                }
-            })
-            .catch(error => {
-                this.unsubscribe(opId);
-                handler(this.formatErrors(error));
-            });
-
-        return opId;
-        */
+        
+        // this.checkOperationOptions(options, handler);
+        //     if (this.operations[opId]) {
+        //         processedOptions.subscriptionName =
+        //             (options.query as any).definitions[0].selectionSet.selections[0].name.value;
+        //         // how reliable is this and is there a better way. I want the subscription name
+        //         // so i dont have to create another index just to unsubscribe
+        //         this.operations[opId] = { options: processedOptions, handler };
+        //         this.sendMessage(opId, MessageTypes.GQL_START, processedOptions);
+        //     }
+        // })
+        
     }
 
     private getObserver<T>(
@@ -186,41 +151,6 @@ export class SubscriptionClient implements ISubscriptionClient{
         }
 
         return observerOrNext;
-    }
-
-    private createMaxConnectTimeGenerator() {
-        /*
-        const minValue = 1000;
-        const maxValue = this.timeout;
-
-        return new Backoff({
-            min: minValue,
-            max: maxValue,
-            factor: 1.2,
-        });
-        */
-    }
-
-
-    private clearCheckConnectionInterval() {
-        // if (this.checkConnectionIntervalId) {
-        //     clearInterval(this.checkConnectionIntervalId);
-        //     this.checkConnectionIntervalId = null;
-        // }
-    }
-
-    private clearMaxConnectTimeout() {
-        // if (this.maxConnectTimeoutId) {
-        //     clearTimeout(this.maxConnectTimeoutId);
-        //     this.maxConnectTimeoutId = null;
-        // }
-    }
-
-    private clearTryReconnectTimeout() {
-        // if (this.tryReconnectTimeoutId) {
-        //     clearTimeout(this.tryReconnectTimeoutId);
-        //     this.tryReconnectTimeoutId = null;
-        // }
     }
 
     private checkOperationOptions(options: OperationOptions, handler: (error: Error[], result?: any) => void) {
