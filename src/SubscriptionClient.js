@@ -1,14 +1,5 @@
-import { ISignedUrlResolver, ISubscriptionClient } from "../interfaces";
-import { OperationOptions, Middleware, FormatedError, ConnectionParams } from "../types";
-import { ExecutionResult } from 'graphql/execution/execute';
-import $$observable from 'symbol-observable';
-import { Observable, Observer } from '../types';
-import * as EventEmitter from 'eventemitter3';
-
-// import * as PahoMQTT from "paho-mqtt";
-import * as uuid from "uuid";
 import * as MQTT from "mqtt";
-
+import { ApolloLink } from 'apollo-link';
 
 export class SubscriptionClient {
 
@@ -95,5 +86,16 @@ export class SubscriptionClient {
         console.log('Socket closed');
         console.log(reason);
         this.observer.error(reason);
+    }
+}
+
+export class SubscriptionClientLink extends ApolloLink {
+    constructor(client) {
+        super();
+        this.client = client;
+    }
+      
+    request(operation) {
+        return this.client.request(operation);
     }
 }

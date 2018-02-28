@@ -39,7 +39,8 @@
     "mqtt": "^2.15.3",
     "typescript": "^2.5.1",
     "eventemitter3": "^3.0.1",
-    "aws-sdk": "^2.202.0"
+    "aws-sdk": "^2.202.0",
+    "apollo-link": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^9.3.0",

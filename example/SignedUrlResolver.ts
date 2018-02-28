@@ -1,4 +1,3 @@
-import { ISignedUrlResolver } from '../src/interfaces/ISignedUrlResolver';
 import { SigV4Utils } from './utils';
 import { AWSCredentials } from './types';
 
@@ -12,7 +11,7 @@ function getCredentials(): AWSCredentials {
 }
 
 
-export class SignedUrlResolver implements ISignedUrlResolver {
+export class SignedUrlResolver {
 
     private iotEndpoint: string;
 
