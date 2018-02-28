@@ -1,10 +1,10 @@
 {
   "name": "subcsription-sdk",
   "version": "0.0.1",
-  "description": "8base serverless subscription library",
+  "description": "8base serverless subscription sdk",
   "author": "8base",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "example": "node ./dist/example/index.js",
     "test": "jest --no-cache --coverage",
