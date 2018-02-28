@@ -4,7 +4,7 @@
   "description": "8base serverless subscription sdk",
   "author": "8base",
   "license": "MIT",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "scripts": {
     "example": "node ./dist/example/index.js",
     "test": "jest --no-cache --coverage",
