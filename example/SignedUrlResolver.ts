@@ -4,14 +4,9 @@ import { AWSCredentials } from './types';
 
 
 function getCredentials(): AWSCredentials {
-    // return {
-    //     accessKeyId: process.env.ACCESS_KEY_ID,
-    //     secretAccessKey: process.env.SECRET_ACCESS_KEY,
-    //     sessionToken: process.env.SESSION_TOKEN
-    // }
     return {
-        accessKeyId: "AKIAIAHT44A6BKXTVKMQ",
-        secretAccessKey: "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",
+        accessKeyId: "AKIAJ4UFHLQW3CZTBJPA",
+        secretAccessKey: "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",
         sessionToken: ""
     }
 }
