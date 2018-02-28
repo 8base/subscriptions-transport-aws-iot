@@ -78,6 +78,7 @@ export class SubscriptionClient {
     }
 
     processReceivedData(receivedData, data) {
+        console.log("on receive!");
         this.observer.next(String(data));
     }
 
