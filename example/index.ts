@@ -3,9 +3,7 @@ import { SignedUrlResolver } from './SignedUrlResolver';
 import { SubscriptionClient } from "../src";
 import { Config } from "./config";
 
-const client = new SubscriptionClient(
-    new SignedUrlResolver(Config.iotEndpoint, Config.region)
-);
+const resolver = new SignedUrlResolver(Config.iotEndpoint, Config.region);
 
 const observer = {
     next: (data: any) => {
@@ -19,8 +17,18 @@ const observer = {
     complete: () => {
         console.log("complete");
     }
-}
+};
 
-const observable = client.request( { query: "afdaf" }).subscribe(observer);
+console.log("start example");
+
+let observable = null;
+
+resolver.resolve()
+    .then(url => {
+        observable = (new SubscriptionClient(url)).request( { query: "afdaf" }).subscribe(observer);
+
+    })
+    .catch(err => console.log(err));
+
 
 

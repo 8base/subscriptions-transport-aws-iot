@@ -5,10 +5,10 @@ import { AWSCredentials } from './types';
 
 function getCredentials(): AWSCredentials {
     return {
-        accessKeyId: "AKIAJ4UFHLQW3CZTBJPA",
-        secretAccessKey: "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",
+        accessKeyId: "",
+        secretAccessKey: "",
         sessionToken: ""
-    }
+    };
 }
 
 
@@ -27,5 +27,5 @@ export class SignedUrlResolver implements ISignedUrlResolver {
         const sigv4utils = new SigV4Utils();
         return sigv4utils.getSignedUrl(this.iotEndpoint, this.region, getCredentials());
     }
-    
+
 }
