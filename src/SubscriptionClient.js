@@ -43,9 +43,15 @@ export class SubscriptionClient {
         const getObserver = this.getObserver.bind(this);
         const unsubscribe = this.unsubscribe.bind(this);
         const setObserver = this.setObserver.bind(this);
+        
+        console.log("request!");
 
         return {
           subscribe(observerOrNext, onError, onComplete) {
+            console.log("subscribe!");
+            console.log(observerOrNext);
+            console.log(onError);
+            console.log(onComplete);
             setObserver(getObserver(observerOrNext, onError, onComplete));
 
             return {
@@ -58,6 +64,7 @@ export class SubscriptionClient {
       }
 
     setObserver(observer) {
+        console.log("set observer!");
         this.observer = observer;
     }
 
@@ -79,7 +86,10 @@ export class SubscriptionClient {
 
     processReceivedData(receivedData, data) {
         console.log("on receive!");
-        this.observer.next(String(data));
+        if (this.observer) {
+            this.observer.next(String(data));
+        }
+        
     }
 
     onClose(reason) {
