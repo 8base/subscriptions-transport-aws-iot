@@ -87,7 +87,6 @@ export class SubscriptionClient {
     processReceivedData(receivedData, data) {
         console.log("on receive!");
         const parsed = JSON.parse(String(data));
-        console.log(Str)
         if (this.observer) {
             this.observer.next(parsed);
         }
