@@ -1,5 +1,4 @@
 # Ignore built ts files
-dist/**/*
 
 
 ### Node template
