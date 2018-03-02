@@ -1,6 +1,6 @@
 import { SignedUrlResolver } from './SignedUrlResolver';
 
-import { SubscriptionClient } from "../src";
+import { SubscriptionClientFactory } from "../src/factories";
 import { Config } from "./config";
 
 const resolver = new SignedUrlResolver(Config.iotEndpoint, Config.region);
@@ -25,7 +25,7 @@ let observable = null;
 
 resolver.resolve()
     .then(url => {
-        observable = (new SubscriptionClient(url)).request( { query: "afdaf" }).subscribe(observer);
+        observable = SubscriptionClientFactory(url).request("test-topic", { qos: 1 }).subscribe(observer);
 
     })
     .catch(err => console.log(err));
