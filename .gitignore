@@ -1,5 +1,5 @@
 # Ignore built ts files
-
+dist/**/*
 
 ### Node template
 # Logs
@@ -70,5 +70,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
-lib/
