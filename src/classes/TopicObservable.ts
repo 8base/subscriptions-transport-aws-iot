@@ -35,7 +35,7 @@ export class TopicObservable<T> implements Observable<T> {
 
 
     // private observers: {[key: string]: IObserver<SubscriptionInfo>};
-    private observers: Map<string, Observer<T>>;
+    private observers: Map<string, Observer<T>> = new Map();
 
     constructor(client: IMqttClient,topic: string, options: IClientSubscribeOptions) {
         this.topic = topic;

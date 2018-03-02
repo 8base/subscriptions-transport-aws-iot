@@ -13,7 +13,7 @@ export class SubscriptionClient implements ISubscriptionClient {
     private url: string;
     private client: IMqttClient;
 
-    private observables: Map<string, TopicObservable<FetchResult>>;
+    private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
     constructor(url: string, client: IMqttClient) {
         if (!url) {

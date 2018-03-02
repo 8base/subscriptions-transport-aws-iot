@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "scripts": {
-    "example": "node ./dist/example/index.js",
+    "example": "node ./example/index.ts",
     "test": "jest --no-cache --coverage",
     "build": "tsc",
     "start": "npm run build -- --watch",
@@ -40,7 +40,8 @@
     "typescript": "^2.5.1",
     "eventemitter3": "^3.0.1",
     "aws-sdk": "^2.202.0",
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.0.7",
+    "graphql-tag": "^2.8.0"
   },
   "devDependencies": {
     "@types/node": "^9.3.0",
@@ -56,5 +57,17 @@
     "tslib": "^1.8.0",
     "tslint": "^5.7.0",
     "symbol-observable": "^1.2.0"
-  }
+  },
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/8base/subscriptions-transport-aws-iot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/8base/subscriptions-transport-aws-iot/issues"
+  },
+  "homepage": "https://github.com/8base/subscriptions-transport-aws-iot#readme"
 }

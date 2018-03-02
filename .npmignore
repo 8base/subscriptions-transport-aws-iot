@@ -1,5 +1,6 @@
 dist/tests/
 src/
+examples/
 tests/
 .travis.yml
 tsconfig.json
