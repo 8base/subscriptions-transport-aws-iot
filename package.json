@@ -4,9 +4,9 @@
   "description": "8base serverless subscription sdk",
   "author": "8base",
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "lib/src/index.js",
   "scripts": {
-    "example": "node ./example/index.ts",
+    "example": "node ./lib/example/index.js",
     "test": "jest --no-cache --coverage",
     "build": "tsc",
     "start": "npm run build -- --watch",
@@ -41,7 +41,9 @@
     "eventemitter3": "^3.0.1",
     "aws-sdk": "^2.202.0",
     "apollo-link": "^1.0.7",
-    "graphql-tag": "^2.8.0"
+    "graphql-tag": "^2.8.0",
+    "zen-observable-ts": "^0.8.8",
+    "websocket-stream": "^5.1.2"
   },
   "devDependencies": {
     "@types/node": "^9.3.0",

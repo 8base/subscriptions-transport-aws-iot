@@ -10,7 +10,7 @@ export interface ISubscriptionClient {
 
 export interface IMqttClient {
 
-    connect(url: string, onReceive: Function, onClose: Function): void;
+    connect(url: string, options: any, onReceive: Function, onClose: Function): void;
 
     subscribe(topic: string, options: IClientSubscribeOptions): void;
 

@@ -2,6 +2,12 @@ import { IMqttClient } from '../interfaces';
 import * as Mqtt from "mqtt";
 import { IClientSubscribeOptions } from 'mqtt';
 
+function _wrapper(client: any) {
+    const wss = require('./ws');
+
+    return wss(client, this.options);
+ }
+
 export class MqttClient implements IMqttClient {
 
     private onReceive: Function;
@@ -9,8 +15,16 @@ export class MqttClient implements IMqttClient {
 
     private client: Mqtt.Client;
 
-    connect(url: string, onReceive: Function, onClose: Function): void {
-        this.client = Mqtt.connect(url);
+    connect(url: string, options: any, onReceive: Function, onClose: Function): void {
+        options.url = url;
+        if (options.customAuthHeaders) {
+            options.websocketOptions.protocol = 'mqttv3.1';
+            options.websocketOptions.headers = options.customAuthHeaders;
+            this.client = new Mqtt.Client(_wrapper.bind( { options }), options);
+        } else {
+            this.client = Mqtt.connect(url);
+        }
+
         this.onReceive = onReceive;
         this.onClose = onClose;
     }

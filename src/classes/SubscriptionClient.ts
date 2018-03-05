@@ -13,13 +13,16 @@ export class SubscriptionClient implements ISubscriptionClient {
     private url: string;
     private client: IMqttClient;
 
+    private options: any;
+
     private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
-    constructor(url: string, client: IMqttClient) {
+    constructor(url: string, options: any, client: IMqttClient) {
         if (!url) {
             throw new Error("url resolver is required.");
         }
 
+        this.options = options;
         this.url = url;
         this.client = client;
         this.connect();
@@ -38,6 +41,7 @@ export class SubscriptionClient implements ISubscriptionClient {
     private connect() {
         this.client.connect(
             this.url,
+            this.options,
             this.onReceive.bind(this),
             this.onClose.bind(this)
         );

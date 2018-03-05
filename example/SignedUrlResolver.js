@@ -2,7 +2,7 @@ import { SigV4Utils } from './utils';
 import { AWSCredentials } from './types';
 
 
-function getCredentials(): AWSCredentials {
+function getCredentials() {
     return {
         accessKeyId: "",
         secretAccessKey: "",
@@ -13,18 +13,21 @@ function getCredentials(): AWSCredentials {
 
 export class SignedUrlResolver {
 
-    private iotEndpoint: string;
-
-    private region: string;
-
-    constructor(iotEndpoint: string, region: string) {
+    constructor(iotEndpoint, region) {
         this.iotEndpoint = iotEndpoint;
         this.region = region;
     }
 
-    async resolve(): Promise<string> {
+    async resolve() {
         const sigv4utils = new SigV4Utils();
         return sigv4utils.getSignedUrl(this.iotEndpoint, this.region, getCredentials());
     }
 
+}
+
+export class CustomAuthUrlResolver {
+
+    async resolve() {
+        return 'wss://' + this.iotEndpoint + '/mqtt';
+    }
 }

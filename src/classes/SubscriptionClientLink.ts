@@ -1,6 +1,6 @@
-import { ApolloLink, NextLink, Operation, FetchResult } from 'apollo-link';
+import { ApolloLink, NextLink, Operation, FetchResult } from "apollo-link";
 import { ISubscriptionClient } from '../interfaces';
-import { Observable } from 'zen-observable-ts';
+import { Observable } from "zen-observable-ts";
 
 
 export class SubscriptionClientLink extends ApolloLink {

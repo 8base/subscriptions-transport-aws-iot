@@ -1,1 +1,2 @@
-export *  from "./ISubscriptionClient";
+export * from "./ISubscriptionClient";
+export * from "./IPublisherClient";

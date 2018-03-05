@@ -11,7 +11,7 @@
         "outDir": "lib",
         "baseUrl": ".",
         "sourceMap": true,
-        "declaration": true,
+        "allowJs": true,
         "types": [
             "lib/index.d.ts"
         ],
@@ -24,9 +24,13 @@
             ]
         }
     },
+    "include": [
+        "example",
+        "src"
+    ],
     "exclude": [
         "dist",
         "template",
-        "example"
+        
     ]
 }
