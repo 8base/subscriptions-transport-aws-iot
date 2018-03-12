@@ -29,14 +29,11 @@ export class TopicObservable<T> implements Observable<T> {
         throw new Error("Method not implemented.");
     }
 
-
-    private topic: string;
     private onCloseAllSubscribers: Function;
 
     private observers: Map<string, Observer<T>> = new Map();
 
-    constructor(topic: string, onCloseAllSubscribers: Function) {
-        this.topic = topic;
+    constructor(onCloseAllSubscribers: Function) {
         this.onCloseAllSubscribers = onCloseAllSubscribers;
     }
 

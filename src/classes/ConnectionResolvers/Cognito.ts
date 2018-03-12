@@ -1,4 +1,4 @@
-import { IConnectOptionsResolver } from "../interfaces";
+import { IConnectOptionsResolver } from "../../interfaces";
 import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk";
 

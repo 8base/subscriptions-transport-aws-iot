@@ -1,20 +1,22 @@
 
 import { ApolloLink, Operation, NextLink, FetchResult } from "apollo-link";
-import { ISubscriptionClient, IMqttClient, IConnectOptionsResolver } from "../interfaces";
-import { SubscriptionInfo, IObserver } from "../types";
-import { TopicObservable } from './TopicObservable';
+import { ISubscribeHandler, IMqttClient, IConnectOptionsResolver } from "../../interfaces";
+import { SubscriptionInfo, IObserver } from "../../types";
+import { TopicObservable } from '../TopicObservable';
 import { IClientSubscribeOptions } from 'mqtt';
 import { Observable } from "zen-observable-ts";
+import { GqlQueryToTopic } from '../Utils';
 
 
 
-export class IotSubscriptionClient implements ISubscriptionClient {
+export class SubscriptionClient {
 
     private url: string;
     private client: IMqttClient;
 
     private resolver: IConnectOptionsResolver;
 
+    private handlers: ISubscribeHandler[] = [];
     /*
         Observable per topic
     */
@@ -31,17 +33,23 @@ export class IotSubscriptionClient implements ISubscriptionClient {
         );
     }
 
-    subscribe(topic: string, options: IClientSubscribeOptions): Observable<FetchResult> {
-        const observable = new TopicObservable<FetchResult>(topic, this.onRemoveObservable.bind(this, topic));
+    subscribe(operation: Operation, options: IClientSubscribeOptions): Observable<FetchResult> {
 
-        this.client
-            .subscribe(topic, options)
+        const topic = GqlQueryToTopic(operation.query);
+
+        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, topic));
+
+        Promise.all(this.handlers.map(handler => handler.subscribe(operation, options)))
             .catch((err: Error) => {
                 observable.onError(err);
             });
 
         this.observables.set(topic, observable);
         return observable;
+    }
+
+    addSubscribeHandler(handler: ISubscribeHandler) {
+        this.handlers.push(handler);
     }
 
     /*

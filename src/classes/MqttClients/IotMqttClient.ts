@@ -1,9 +1,9 @@
-import { IMqttClient } from '../interfaces';
+import { IMqttClient } from '../../interfaces';
 import { IClientSubscribeOptions } from 'mqtt';
 import * as DeviceSdk from 'aws-iot-device-sdk';
-import { CognitoConnectOptions } from "../types";
-import { IConnectOptionsResolver } from "../interfaces";
-import { Config } from '../config';
+import { CognitoConnectOptions } from "../../types";
+import { IConnectOptionsResolver } from "../../interfaces";
+import { Config } from '../../config';
 
 
 export class IotMqttClient implements IMqttClient {
