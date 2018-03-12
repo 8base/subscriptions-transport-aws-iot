@@ -1,7 +1,9 @@
-import { SubscriptionClient, MqttClient } from "../classes";
+import { SubscriptionClient, IotMqttClient, CognitoConnectionResolver } from "../classes";
 import { ISubscriptionClient } from '../interfaces';
+import { Config } from "../config";
 
 
-export function SubscriptionClientFactory(url: string, options: any): ISubscriptionClient {
-    return new SubscriptionClient(url, options, new MqttClient());
+export function SubscriptionClientFactory(idToken: string): ISubscriptionClient {
+    const cognitoConnectionResolver = new CognitoConnectionResolver(idToken, Config.identityPoolId, Config.region, Config.userPoolId);
+    return new SubscriptionClient(cognitoConnectionResolver, new IotMqttClient());
 }

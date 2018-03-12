@@ -12,9 +12,6 @@
         "baseUrl": ".",
         "sourceMap": true,
         "allowJs": true,
-        "types": [
-            "lib/index.d.ts"
-        ],
         "typeRoots": [
             "node_modules/@types"
         ],        
@@ -26,7 +23,8 @@
     },
     "include": [
         "example",
-        "src"
+        "src",
+        "actions"
     ],
     "exclude": [
         "dist",

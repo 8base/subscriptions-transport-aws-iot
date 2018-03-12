@@ -31,15 +31,13 @@ export class TopicObservable<T> implements Observable<T> {
 
 
     private topic: string;
-    private options: any;
+    private onCloseAllSubscribers: Function;
 
-
-    // private observers: {[key: string]: IObserver<SubscriptionInfo>};
     private observers: Map<string, Observer<T>> = new Map();
 
-    constructor(client: IMqttClient,topic: string, options: IClientSubscribeOptions) {
+    constructor(topic: string, onCloseAllSubscribers: Function) {
         this.topic = topic;
-        this.options = options;
+        this.onCloseAllSubscribers = onCloseAllSubscribers;
     }
 
     subscribe(observerOrNext: ((value: T) => void) | ZenObservable.Observer<T>, error?: (error: any) => void, complete?: () => void): ZenObservable.Subscription {
@@ -82,6 +80,10 @@ export class TopicObservable<T> implements Observable<T> {
 
     private unsubscribe(id: string) {
         this.observers.delete(id);
+
+        if (!this.observers.keys.length) {
+            this.onCloseAllSubscribers();
+        }
     }
 
     private getObserver(observerOrNext: ((Observer<T>) | ((v: T) => void)), error?: (e: Error) => void, complete?: () => void) {
