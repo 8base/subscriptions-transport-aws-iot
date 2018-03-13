@@ -1,6 +1,5 @@
 import { ISubscribeHandler, IMqttClient } from '../../../interfaces';
 import { Operation } from 'apollo-link';
-import { GqlQueryToTopic } from '../../Utils';
 import { SubscribeInfo } from '../../../types';
 
 export class IotSubscribeHandler implements ISubscribeHandler {

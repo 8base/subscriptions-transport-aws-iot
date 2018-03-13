@@ -1,5 +1,5 @@
-import { IObserver, SubscriptionInfo } from "../types";
-import { IMqttClient } from '../interfaces';
+import { IObserver } from "../../types";
+import { IMqttClient } from '../../interfaces';
 import * as uuid from "uuid";
 import { IClientSubscribeOptions } from "mqtt";
 import { FetchResult } from "apollo-link";

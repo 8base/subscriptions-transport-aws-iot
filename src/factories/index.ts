@@ -1,4 +1,4 @@
-import { SubscriptionClient, IotMqttClient, CognitoConnectionResolver, IotSubscribeHandler } from "../classes";
+import { SubscriptionClient, Publisher, IotMqttClient, CognitoConnectionResolver, IotSubscribeHandler } from "../classes";
 import { Config } from "../config";
 import { IMqttClient, ISubscribeHandler, IConnectOptionsResolver } from '../interfaces';
 
@@ -34,5 +34,16 @@ export namespace SubscriptionEnvironment {
             }
         }
     }
+
+}
+
+export namespace PublisherEnvironment {
+
+    export function publish(topic: string, payload: any) {
+        new Publisher().publish(topic, payload);
+    }
+}
+
+export namespace PolicyEnvironment {
 
 }

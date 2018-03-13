@@ -2,10 +2,9 @@
 import { ApolloLink, Operation, NextLink, FetchResult } from "apollo-link";
 import { ISubscribeHandler, IMqttClient, IConnectOptionsResolver } from "../../interfaces";
 import { SubscribeInfo } from "../../types";
-import { TopicObservable } from '../TopicObservable';
+import { TopicObservable } from '../Common';
 import { IClientSubscribeOptions } from 'mqtt';
 import { Observable } from "zen-observable-ts";
-import { GqlQueryToTopic } from '../Utils';
 
 export class SubscriptionClient {
 
@@ -56,7 +55,8 @@ export class SubscriptionClient {
 
     private onReceive(topic: string, data: any) {
         const resp = this.processResponce(data);
-        this.observables.get(topic).onData(resp);
+        if (resp)
+            this.observables.get(topic).onData(resp);
     }
 
     private onClose(reason: Error) {
@@ -70,6 +70,11 @@ export class SubscriptionClient {
     }
 
     private processResponce(data: any) {
-        return JSON.parse(String(data));
+        try {
+            return JSON.parse(String(data));
+        } catch(ex) {
+            console.log("input data " + data + " is not json format");
+        }
+        return null;
     }
 }

@@ -6,7 +6,8 @@
   "license": "MIT",
   "main": "lib/src/index.js",
   "scripts": {
-    "example": "node ./lib/example/index.js",
+    "subscribe": "node ./lib/example/subscribe.js",
+    "publish": "node ./lib/example/publish.js",
     "test": "jest --no-cache --coverage",
     "build": "tsc",
     "start": "npm run build -- --watch",

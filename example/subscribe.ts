@@ -3,7 +3,7 @@ import { Config } from "../src/config";
 import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails, CognitoUserSession } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk";
 import "isomorphic-fetch";
-import * as _ from "lodash";
+
 
 /*
     setup process environment

@@ -1,7 +1,5 @@
-import { SubscriptionInfo } from "../types";
-
 
 export interface IPublisherClient {
 
-    publish(topic: string, data: SubscriptionInfo): void;
+    /* async */ publish(topic: string, data: Buffer): Promise<void>;
 }
