@@ -4,15 +4,16 @@
   "description": "8base serverless subscription sdk",
   "author": "8base",
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "lib/src/index.js",
   "scripts": {
-    "example": "node ./example/index.ts",
+    "example": "node ./lib/example/index.js",
     "test": "jest --no-cache --coverage",
     "build": "tsc",
     "start": "npm run build -- --watch",
     "tslint": "tslint -c tslint.json -p tsconfig.json --type-check",
     "upload": "npm version patch && git push --follow-tags",
-    "preversion": "npm run tslint"
+    "preversion": "npm run tslint",
+    "attach-policy": "node ./lib/actions/attach-policy.js"
   },
   "jest": {
     "globals": {
@@ -36,12 +37,19 @@
     "setupTestFrameworkScriptFile": "./test/setup.ts"
   },
   "dependencies": {
+    "lodash": "^4.17.5",
     "mqtt": "^2.15.3",
     "typescript": "^2.5.1",
     "eventemitter3": "^3.0.1",
     "aws-sdk": "^2.202.0",
     "apollo-link": "^1.0.7",
-    "graphql-tag": "^2.8.0"
+    "graphql-tag": "^2.8.0",
+    "zen-observable-ts": "^0.8.8",
+    "websocket-stream": "^5.1.2",
+    "amazon-cognito-identity-js": "^2.0.1",
+    "aws-iot-device-sdk": "^2.2.1",
+    "isomorphic-fetch": "^2.2.1",
+    "graphql": "^0.13.1"
   },
   "devDependencies": {
     "@types/node": "^9.3.0",
@@ -51,6 +59,8 @@
     "@types/uuid": "^3.4.3",
     "@types/paho-mqtt": "^1.0.3",
     "@types/mqtt": "^2.5.0",
+    "@types/aws-iot-device-sdk": "^2.1.1",
+    "@types/lodash": "^4.14.104",
     "awesome-typescript-loader": "^3.2.3",
     "nodemon": "^1.11.0",
     "npm": "5.3.0",

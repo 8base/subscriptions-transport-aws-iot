@@ -1,17 +1,17 @@
-import { ApolloLink, NextLink, Operation, FetchResult } from 'apollo-link';
-import { ISubscriptionClient } from '../interfaces';
-import { Observable } from 'zen-observable-ts';
-
+import { ApolloLink, NextLink, Operation, FetchResult } from "apollo-link";
+import { Observable } from "zen-observable-ts";
+import { ApolloLinkOperationToSubscribeInfo } from './Utils';
+import { SubscriptionClient } from "./Subscription";
 
 export class SubscriptionClientLink extends ApolloLink {
-    private client: ISubscriptionClient;
-    constructor(client: ISubscriptionClient) {
+    private client: SubscriptionClient;
+
+    constructor(client: SubscriptionClient) {
         super();
         this.client = client;
     }
 
     request(operation: Operation, forwardedLink: NextLink): Observable<FetchResult> {
-        // todo operation convert to topic and data
-        return this.client.request(operation.getContext().topic, { qos: 1 });
+        return this.client.subscribe( ApolloLinkOperationToSubscribeInfo(operation), { qos: 1 });
     }
 }

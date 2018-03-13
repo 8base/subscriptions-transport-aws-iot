@@ -11,10 +11,7 @@
         "outDir": "lib",
         "baseUrl": ".",
         "sourceMap": true,
-        "declaration": true,
-        "types": [
-            "lib/index.d.ts"
-        ],
+        "allowJs": true,
         "typeRoots": [
             "node_modules/@types"
         ],        
@@ -24,9 +21,14 @@
             ]
         }
     },
+    "include": [
+        "example",
+        "src",
+        "actions"
+    ],
     "exclude": [
         "dist",
         "template",
-        "example"
+        
     ]
 }

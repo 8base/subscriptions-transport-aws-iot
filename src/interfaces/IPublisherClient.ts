@@ -1,7 +1,7 @@
-import { SubscriptionInfo } from "lib/types";
+import { SubscriptionInfo } from "../types";
 
 
-export class IPublisherClient {
+export interface IPublisherClient {
 
     publish(topic: string, data: SubscriptionInfo): void;
 }
