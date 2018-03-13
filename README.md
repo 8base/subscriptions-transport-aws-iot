@@ -6,7 +6,7 @@ There are two environment: subsription and publisher.
 
 ## Subscription
 
-Subscription use for start websocket communication with services such as IoT or something else. At moment there are present implementation with IoT service.
+Subscription use for start websocket communication with services such as IoT or something else. At moment there are present implementation of IoT service.
 To connect with remote websocket service use authentication service. At moment there are present Cognito authentication.
 
 ### Example
