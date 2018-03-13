@@ -1,7 +1,5 @@
-export type SubscriptionInfo = {
+import { DocumentNode } from 'graphql';
 
-    id: string;
-};
 
 export interface IObserver<T> {
     next(data: any): void;
@@ -13,6 +11,12 @@ export interface ConnectOptions {
     region: string;
     iotEndpoint: string;
 
+}
+
+export interface SubscribeInfo {
+    query?: DocumentNode;
+
+    topic: string;
 }
 
 export interface CognitoConnectOptions extends ConnectOptions {

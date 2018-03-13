@@ -1,18 +1,16 @@
 
 import { ApolloLink, Operation, NextLink, FetchResult } from "apollo-link";
 import { ISubscribeHandler, IMqttClient, IConnectOptionsResolver } from "../../interfaces";
-import { SubscriptionInfo, IObserver } from "../../types";
+import { SubscribeInfo } from "../../types";
 import { TopicObservable } from '../TopicObservable';
 import { IClientSubscribeOptions } from 'mqtt';
 import { Observable } from "zen-observable-ts";
 import { GqlQueryToTopic } from '../Utils';
 
-
-
 export class SubscriptionClient {
 
     private url: string;
-    private client: IMqttClient;
+    private mqttClient: IMqttClient;
 
     private resolver: IConnectOptionsResolver;
 
@@ -22,29 +20,26 @@ export class SubscriptionClient {
     */
     private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
-    constructor(resolver: IConnectOptionsResolver, client: IMqttClient) {
+    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient) {
         this.resolver = resolver;
-        this.client = client;
+        this.mqttClient = mqttClient;
 
-        this.client.connect(
+        this.mqttClient.connect(
             this.resolver,
             this.onReceive.bind(this),
             this.onClose.bind(this)
         );
     }
 
-    subscribe(operation: Operation, options: IClientSubscribeOptions): Observable<FetchResult> {
+    subscribe(info: SubscribeInfo, options: IClientSubscribeOptions): Observable<FetchResult> {
+        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.topic));
 
-        const topic = GqlQueryToTopic(operation.query);
-
-        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, topic));
-
-        Promise.all(this.handlers.map(handler => handler.subscribe(operation, options)))
+        Promise.all(this.handlers.map(handler => handler.subscribe(info, options)))
             .catch((err: Error) => {
                 observable.onError(err);
             });
 
-        this.observables.set(topic, observable);
+        this.observables.set(info.topic, observable);
         return observable;
     }
 
@@ -52,6 +47,9 @@ export class SubscriptionClient {
         this.handlers.push(handler);
     }
 
+    get transport() {
+        return this.mqttClient;
+    }
     /*
         Private functions
     */

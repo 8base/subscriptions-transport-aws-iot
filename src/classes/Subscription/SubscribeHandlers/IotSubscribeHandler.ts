@@ -1,6 +1,7 @@
 import { ISubscribeHandler, IMqttClient } from '../../../interfaces';
 import { Operation } from 'apollo-link';
 import { GqlQueryToTopic } from '../../Utils';
+import { SubscribeInfo } from '../../../types';
 
 export class IotSubscribeHandler implements ISubscribeHandler {
 
@@ -10,8 +11,8 @@ export class IotSubscribeHandler implements ISubscribeHandler {
         this.client = client;
     }
 
-    async subscribe(operation: Operation, options: any): Promise<void> {
-        await this.client.subscribe(GqlQueryToTopic(operation.query), options);
+    async subscribe(info: SubscribeInfo, options: any): Promise<void> {
+        await this.client.subscribe(info.topic, options);
     }
 
 }

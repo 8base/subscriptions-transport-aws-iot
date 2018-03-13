@@ -1,6 +1,6 @@
-import { Operation } from "apollo-link";
+import { SubscribeInfo } from "../types";
 
 export interface ISubscribeHandler {
 
-    /* async */ subscribe(operation: Operation, options: any): Promise<void>;
+    /* async */ subscribe(info: SubscribeInfo, options: any): Promise<void>;
 }

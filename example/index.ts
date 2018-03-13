@@ -1,8 +1,9 @@
-import { SubsctiptionClients } from "../src/factories";
+import { SubscriptionEnvironment } from "../src/factories";
 import { Config } from "../src/config";
 import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails, CognitoUserSession } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk";
 import "isomorphic-fetch";
+import * as _ from "lodash";
 
 /*
     setup process environment
@@ -57,14 +58,15 @@ const cognitoUser = new CognitoUser({
 
 cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (session: CognitoUserSession) => {
+        const client = SubscriptionEnvironment
+                .Client
+                .make(
+                    SubscriptionEnvironment.Transport.Iot(),
+                    SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()));
 
-        SubsctiptionClients
-            .Iot
-            .CognitoAuth
-            .Constructor
-            .create(session.getIdToken().getJwtToken())
-            .client()
-            .subscribe("test-topic", { qos: 1 }).subscribe(observer);
+        SubscriptionEnvironment.SubscribeHandlers.Iot.add(client);
+
+        client.subscribe( { topic: "test-topic" }, { qos: 1 }).subscribe(observer);
     },
     onFailure: (err: Error) => {
         console.log(err);

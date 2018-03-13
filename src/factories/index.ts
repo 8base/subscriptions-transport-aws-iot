@@ -1,47 +1,38 @@
 import { SubscriptionClient, IotMqttClient, CognitoConnectionResolver, IotSubscribeHandler } from "../classes";
 import { Config } from "../config";
-import { IMqttClient, ISubscribeHandler } from '../interfaces';
+import { IMqttClient, ISubscribeHandler, IConnectOptionsResolver } from '../interfaces';
 
 
-export namespace SubsctiptionClients {
+export namespace SubscriptionEnvironment {
 
-    export namespace Iot {
+    export namespace Transport {
+        export function Iot(): IMqttClient {
+            return new IotMqttClient();
+        }
+    }
 
-        export namespace CognitoAuth {
+    export namespace Auth {
+        export function Cognito(idToken: string): IConnectOptionsResolver {
+            return new CognitoConnectionResolver(idToken, Config.identityPoolId, Config.region, Config.userPoolId);
+        }
+    }
 
-            export class Constructor {
-                private subscriptionClient: SubscriptionClient;
+    export namespace Client {
 
-                private mqttClient: IMqttClient = new IotMqttClient();
+        export function make(transport: IMqttClient, resolver: IConnectOptionsResolver) {
+            return new SubscriptionClient(resolver, transport);
+        }
+    }
 
-                static create(idToken: string): Constructor {
-                    const cognitoConnectionResolver = new CognitoConnectionResolver(idToken, Config.identityPoolId, Config.region, Config.userPoolId);
-                    return new Constructor(cognitoConnectionResolver).addPredefineHandlers();
-                }
+    export namespace SubscribeHandlers {
 
-                addHandler(handler: ISubscribeHandler): Constructor {
-                    this.subscriptionClient.addSubscribeHandler(handler);
-                    return this;
-                }
+        export namespace Iot {
 
-                client() {
-                    return this.subscriptionClient;
-                }
-
-                private constructor(resolver: CognitoConnectionResolver) {
-                    this.subscriptionClient = new SubscriptionClient(resolver, this.mqttClient);
-                }
-
-                private addPredefineHandlers(): Constructor {
-                    this.subscriptionClient.addSubscribeHandler(new IotSubscribeHandler(this.mqttClient));
-                    return this;
-                }
+            export function add(client: SubscriptionClient): SubscriptionClient {
+                 client.addSubscribeHandler(new IotSubscribeHandler(client.transport));
+                 return client;
             }
         }
     }
-}
-
-
-
 
 }
