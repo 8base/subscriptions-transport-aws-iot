@@ -17,21 +17,41 @@ export namespace SubscriptionEnvironment {
         }
     }
 
-    export namespace Client {
+    export class Client {
+        private mqttClient: IMqttClient;
+        private resolver: IConnectOptionsResolver;
+        private handlers: ISubscribeHandler[];
 
-        export function make(transport: IMqttClient, resolver: IConnectOptionsResolver) {
-            return new SubscriptionClient(resolver, transport);
+        static create(): Client {
+            return new Client();
+        }
+
+        transport(transport: IMqttClient): Client {
+            this.mqttClient = transport;
+            return this;
+        }
+
+        authResolver(resolver: IConnectOptionsResolver): Client {
+            this.resolver = resolver;
+            return this;
+        }
+
+        addHandler(handler: ISubscribeHandler): Client {
+            this.handlers.push(handler);
+            return this;
+        }
+
+        client() {
+
+            this.addHandler(PredefineSubscribeHandlers.Iot(this.mqttClient));
+
+            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers);
         }
     }
 
-    export namespace SubscribeHandlers {
-
-        export namespace Iot {
-
-            export function add(client: SubscriptionClient): SubscriptionClient {
-                 client.addSubscribeHandler(new IotSubscribeHandler(client.transport));
-                 return client;
-            }
+    export namespace PredefineSubscribeHandlers {
+        export function Iot(mqttClient: IMqttClient): ISubscribeHandler {
+            return new IotSubscribeHandler(mqttClient);
         }
     }
 

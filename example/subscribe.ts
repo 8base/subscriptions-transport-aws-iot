@@ -60,11 +60,10 @@ cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (session: CognitoUserSession) => {
         const client = SubscriptionEnvironment
                 .Client
-                .make(
-                    SubscriptionEnvironment.Transport.Iot(),
-                    SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()));
-
-        SubscriptionEnvironment.SubscribeHandlers.Iot.add(client);
+                .create()
+                .transport(SubscriptionEnvironment.Transport.Iot())
+                .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
+                .client();
 
         client.subscribe( { topic: "test-topic" }, { qos: 1 }).subscribe(observer);
     },

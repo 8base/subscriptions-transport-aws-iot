@@ -13,15 +13,16 @@ export class SubscriptionClient {
 
     private resolver: IConnectOptionsResolver;
 
-    private handlers: ISubscribeHandler[] = [];
+    private handlers: ISubscribeHandler[];
     /*
         Observable per topic
     */
     private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
-    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient) {
+    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[]) {
         this.resolver = resolver;
         this.mqttClient = mqttClient;
+        this.handlers = handlers;
 
         this.mqttClient.connect(
             this.resolver,
@@ -42,13 +43,6 @@ export class SubscriptionClient {
         return observable;
     }
 
-    addSubscribeHandler(handler: ISubscribeHandler) {
-        this.handlers.push(handler);
-    }
-
-    get transport() {
-        return this.mqttClient;
-    }
     /*
         Private functions
     */
