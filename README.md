@@ -28,7 +28,8 @@ To start subscription service you have to
               .Client
               .create()
               .transport(SubscriptionEnvironment.Transport.Iot())
-              .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()));
+              .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
+              .client();
   ```
   4. Subscribe on topic. This function return observable.
   ```
