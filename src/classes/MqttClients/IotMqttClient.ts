@@ -8,8 +8,8 @@ import { Config } from '../../config';
 
 export class IotMqttClient implements IMqttClient {
 
-    private onReceive: Function;
-    private onClose: Function;
+    private onReceive: Function = () => {};
+    private onClose: Function = () => {};
 
     private client: DeviceSdk.device;
 
@@ -48,11 +48,13 @@ export class IotMqttClient implements IMqttClient {
 
     async connect(connectOptionsResolver: IConnectOptionsResolver, onReceive: Function, onClose: Function): Promise<void> {
 
+        console.log("mqtt connect");
         this.onReceive = onReceive;
         this.onClose = onClose;
 
         const options = await connectOptionsResolver.resolve();
 
+        console.log(options);
         this.client.updateWebSocketCredentials(options.accessKeyId, options.secretAccessKey, options.sessionToken, null);
     }
 

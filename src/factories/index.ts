@@ -20,7 +20,7 @@ export namespace SubscriptionEnvironment {
     export class Client {
         private mqttClient: IMqttClient;
         private resolver: IConnectOptionsResolver;
-        private handlers: ISubscribeHandler[];
+        private handlers: ISubscribeHandler[] = [];
 
         static create(): Client {
             return new Client();
