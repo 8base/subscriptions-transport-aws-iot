@@ -1,19 +1,18 @@
 # subscriptions-transport-aws-iot
 
-Library was created to simplify serverless subscription mechanism.
+This library was created to simplify serverless subscription mechanism.
 
-There are two environment: subsription and publisher. 
+There are two environments: `subsription` and `publisher`. 
 
 ## Subscription
 
-Subscription use for start websocket communication with services such as IoT or something else. At moment there are present implementation of IoT service.
-To connect with remote websocket service use authentication service. At moment there are present Cognito authentication.
+`Subscription` is uesd to start a websocket communication with the AWS IoT service. The library uses Amazon Cognito for authentication.
 
 ### Example
 
 To start subscription service you have to 
  
-  1. Setup process environment
+  1. Setup environment variables
 
     AWS_IOT_ENDPOINT
     AWS_REGION
@@ -31,7 +30,7 @@ To start subscription service you have to
               .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
               .client();
   ```
-  4. Subscribe on topic. This function return observable.
+  4. Subscribe to a topic. This function return observable.
   ```
     observable = client.subscribe( { topic: "test-topic" }, { qos: 1 });
   ```
