@@ -3,23 +3,23 @@ import {
     Publisher,
     IotMqttClient,
     CognitoConnectionResolver,
-    IotSubscribeHandler,
-    RedisSubscriptionStatusEngine
+    OnSubscribeIotTopic,
+    RedisSubscriptionEngine,
 } from "../classes";
 import { Config } from "../config";
 import {
     IMqttClient,
     ISubscribeHandler,
     IConnectOptionsResolver,
-    ISubscriptionStatusEngine
+    ISubscriptionEngine
 } from '../interfaces';
 
 
 export namespace SubscriptionEnvironment {
 
     export namespace Transport {
-        export function Iot(): IMqttClient {
-            return new IotMqttClient();
+        export function Iot(client: string): IMqttClient {
+            return new IotMqttClient(client);
         }
     }
 
@@ -54,28 +54,20 @@ export namespace SubscriptionEnvironment {
         }
 
         client() {
-
-            this.addHandler(PredefineSubscribeHandlers.Iot(this.mqttClient));
-
+            this.addHandler(new OnSubscribeIotTopic(this.mqttClient));
             return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers);
         }
     }
 
-    export namespace PredefineSubscribeHandlers {
-        export function Iot(mqttClient: IMqttClient): ISubscribeHandler {
-            return new IotSubscribeHandler(mqttClient);
-        }
-    }
-
-    export function StatusEngine(redisEndpoint: string, port: number): ISubscriptionStatusEngine {
-        return new RedisSubscriptionStatusEngine(redisEndpoint, port);
+    export async function SubscriptionEngine(redisEndpoint: string, port: number): Promise<ISubscriptionEngine> {
+        return await RedisSubscriptionEngine.create(redisEndpoint, port);
     }
 }
 
 export namespace PublisherEnvironment {
 
-    export function publish(topic: string, payload: any) {
-        new Publisher().publish(topic, payload);
+    export function publish(client: string, topic: string, payload: any) {
+        new Publisher().publish(client, topic, payload);
     }
 }
 

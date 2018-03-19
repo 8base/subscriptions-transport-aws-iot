@@ -17,6 +17,8 @@ export interface SubscribeInfo {
     query?: DocumentNode;
 
     topic: string;
+
+    // client: string;
 }
 
 export interface CognitoConnectOptions extends ConnectOptions {

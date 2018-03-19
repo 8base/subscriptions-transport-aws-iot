@@ -13,11 +13,11 @@ export class IotMqttClient implements IMqttClient {
 
     private client: DeviceSdk.device;
 
-    constructor() {
+    constructor(client: string) {
         this.client = new DeviceSdk.device({
             region: Config.region,
             host: Config.iotEndpoint,
-            clientId: `${Math.floor((Math.random() * 1000000) + 1)}`,
+            clientId: client + `${Math.floor((Math.random() * 1000000) + 1)}`,
             protocol: 'wss',
             accessKeyId: '',
             secretKey:  '',

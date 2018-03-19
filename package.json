@@ -16,7 +16,7 @@
     "upload": "npm version patch && git push --follow-tags",
     "preversion": "npm run tslint",
     "attach-policy": "node ./lib/actions/attach-policy.js",
-    "deploy-aws": "node ./lib/deploy/deployAws"
+    "install-subscription-engine": "node ./lib/deploy/deployAws"
   },
   "jest": {
     "globals": {
@@ -67,6 +67,8 @@
     "@types/aws-iot-device-sdk": "^2.1.1",
     "@types/lodash": "^4.14.104",
     "@types/ioredis": "^3.2.6",
+    "@types/archiver": "^2.1.0",
+    "@types/minimist": "^1.2.0",
     "awesome-typescript-loader": "^3.2.3",
     "nodemon": "^1.11.0",
     "npm": "5.3.0",

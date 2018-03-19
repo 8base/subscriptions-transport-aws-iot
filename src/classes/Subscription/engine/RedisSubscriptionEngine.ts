@@ -1,16 +1,37 @@
-import { ISubscriptionStatusEngine, Client, Subscription } from "../interfaces/Subscription";
+import { ISubscriptionEngine, Client, Subscription, ClientStatus } from "../../../interfaces";
 import * as Redis from "ioredis";
 import * as path from "path";
 
-export class RedisSubscriptionStatusEngine implements ISubscriptionStatusEngine {
+
+export class RedisSubscriptionEngine implements ISubscriptionEngine {
 
   private redis: Redis.Redis;
 
-  constructor (redisEndpoint: string, port: number) {
-    this.redis = new Redis("test-redis.3lfqwv.ng.0001.use1.cache.amazonaws.com:6379");
-    this.redis.on("error", (err: Error) => {
-      console.log(err.message);
+  constructor (redis: Redis.Redis) {
+    this.redis = redis;
+  }
+
+  static async create(redisEndpoint: string, port: number): Promise<ISubscriptionEngine> {
+    return new Promise<ISubscriptionEngine>((resolve, reject) => {
+      const redis = new Redis("test-redis.3lfqwv.ng.0001.use1.cache.amazonaws.com:6379");
+
+      redis.on("error", (err: Error) => {
+        console.log(err.message);
+        reject(err);
+      });
+
+      redis.on("connect", () => {
+        resolve(new RedisSubscriptionEngine(redis));
+      });
     });
+  }
+
+  async disconnect(): Promise<void> {
+    return await this.redis.disconnect();
+  }
+
+  async ClientStatus(client: string): Promise<ClientStatus> {
+    return await this.redis.get(SubscriptionPathEngine.clientKey(client)) as ClientStatus;
   }
 
   async getSubscription(client: string, topic: string): Promise<Subscription> {
@@ -29,27 +50,21 @@ export class RedisSubscriptionStatusEngine implements ISubscriptionStatusEngine 
   }
 
   async unsubscribeClient(client: string, topic: string): Promise<void> {
-    this.redis.pipeline().del(SubscriptionPathEngine.topicInfoKey(client, topic));
+    await this.redis.del(SubscriptionPathEngine.topicInfoKey(client, topic));
   }
 
   async setClientActive(client: string): Promise<void> {
-    this.redis.set(SubscriptionPathEngine.clientKey(client), ClientStatus.active);
+    return await this.redis.set(SubscriptionPathEngine.clientKey(client), ClientStatus.active);
   }
 
   async setClientInactive(client: string): Promise<void> {
-    this.redis.set(SubscriptionPathEngine.clientKey(client), ClientStatus.inactive);
+    return await this.redis.set(SubscriptionPathEngine.clientKey(client), ClientStatus.inactive);
   }
 
   /*
     Private functions
   */
 
-}
-
-enum ClientStatus {
-  active = 'active',
-
-  inactive = 'inactive'
 }
 
 class SubscriptionPathEngine {

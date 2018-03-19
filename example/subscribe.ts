@@ -4,17 +4,8 @@ import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetai
 import * as AWS from "aws-sdk";
 import "isomorphic-fetch";
 
-
-/*
-    setup process environment
- */
-
-process.env.AWS_IOT_ENDPOINT = "a1iocoaxmt1h7b.iot.us-east-1.amazonaws.com";
-process.env.AWS_REGION = "us-east-1";
-process.env.AWS_USER_POOL_ID = "us-east-1_LrSYtlfnH";
-process.env.AWS_CLIENT_ID = "1lr8bpt6bbru48ou760ufcn2tt";
-process.env.AWS_IDENTITY_POOL_ID = "us-east-1:7eb56e23-0840-4ffe-ab40-d0a2b5006de4";
-process.env.DEBUG_MQTT_CLIENT = "true";
+import * as parseArgs from "minimist";
+import * as _ from "lodash";
 
 const observer = {
     next: (data: any) => {
@@ -30,29 +21,43 @@ const observer = {
     }
 };
 
-if (process.argv.length < 4) {
-    console.log("invalid input args");
-    process.exit(0);
-}
 
-console.log("start example");
-console.log("username = " + process.argv[2]);
-console.log("password = " + process.argv[3]);
+
+let parameters = new Map<string, string>();
+_.map(parseArgs(process.argv), (value: string, key: string) => parameters.set(key, value));
+
+
+Config.identityPoolId = parameters.get("identityPoolId");
+Config.iotEndpoint = parameters.get("iotEndpoint");
+Config.region = parameters.get("region");
+Config.userPoolId = parameters.get("userPoolId");
+Config.debugMqttClient = !!parameters.get("d");
+Config.userPoolClientId = parameters.get("userPoolClientId");
+
+const user = parameters.get("user");
+const password = parameters.get("password");
+
+console.log("start subscribe");
+
+console.log("username = " + user);
+console.log("password = " + password);
+console.log("userPoolClientId = " + Config.userPoolClientId);
 console.log("region = " + Config.region);
+console.log("identityPoolId = " + Config.identityPoolId);
+console.log("iotEndpoint = " + Config.iotEndpoint);
+console.log("userPoolId = " + Config.userPoolId);
 
-const username = process.argv[2];
-const password = process.argv[3];
 
 const authenticationDetails = new AuthenticationDetails({
-    Username: username,
+    Username: user,
     Password: password,
 });
 
 const cognitoUser = new CognitoUser({
-    Username: username,
+    Username: user,
     Pool: new CognitoUserPool({
         UserPoolId: Config.userPoolId,
-        ClientId: Config.clientId
+        ClientId: Config.userPoolClientId
     })
 });
 
@@ -61,7 +66,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
         const client = SubscriptionEnvironment
                 .Client
                 .create()
-                .transport(SubscriptionEnvironment.Transport.Iot())
+                .transport(SubscriptionEnvironment.Transport.Iot(user))
                 .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
                 .client();
 
