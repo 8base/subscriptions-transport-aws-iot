@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import { Config } from '../src/config';
+import { Config } from '../../src/config';
 
 
 const principal = Config.identityPoolId;
@@ -12,7 +12,7 @@ if (!policy) {
 AWS.config.region = Config.region;
 
 const iot = new AWS.Iot();
-iot.attachPolicy({ policyName: policy,  target: principal }, (err: Error, data: any) => {
+iot.attachPolicy({ policyName: policy,  target: principal }, (err, data) => {
     if (err) {
         return console.log(err.message);
     }

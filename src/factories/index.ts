@@ -1,6 +1,18 @@
-import { SubscriptionClient, Publisher, IotMqttClient, CognitoConnectionResolver, IotSubscribeHandler } from "../classes";
+import {
+    SubscriptionClient,
+    Publisher,
+    IotMqttClient,
+    CognitoConnectionResolver,
+    IotSubscribeHandler,
+    RedisSubscriptionStatusEngine
+} from "../classes";
 import { Config } from "../config";
-import { IMqttClient, ISubscribeHandler, IConnectOptionsResolver } from '../interfaces';
+import {
+    IMqttClient,
+    ISubscribeHandler,
+    IConnectOptionsResolver,
+    ISubscriptionStatusEngine
+} from '../interfaces';
 
 
 export namespace SubscriptionEnvironment {
@@ -55,6 +67,9 @@ export namespace SubscriptionEnvironment {
         }
     }
 
+    export function StatusEngine(redisEndpoint: string, port: number): ISubscriptionStatusEngine {
+        return new RedisSubscriptionStatusEngine(redisEndpoint, port);
+    }
 }
 
 export namespace PublisherEnvironment {

@@ -1,6 +1,4 @@
 
-import Context from "./Context";
-import { AccountSchema } from "./AccountSchema";
 
 
 export enum TableAction {
@@ -31,7 +29,7 @@ export interface TableEventInfo extends EventInfo {
 
 export interface ISubscriptionSink {
 
-    publish(info: TableEventInfo, context: Context): void;
+    publish(info: TableEventInfo): void;
 }
 
 export interface ISubscribersStatus {

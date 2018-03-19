@@ -6,8 +6,11 @@ export class RedisSubscriptionStatusEngine implements ISubscriptionStatusEngine 
 
   private redis: Redis.Redis;
 
-  constructor () {
-    this.redis = new Redis("test-redis-001.3lfqwv.0001.use1.cache.amazonaws.com");
+  constructor (redisEndpoint: string, port: number) {
+    this.redis = new Redis("test-redis.3lfqwv.ng.0001.use1.cache.amazonaws.com:6379");
+    this.redis.on("error", (err: Error) => {
+      console.log(err.message);
+    });
   }
 
   async getSubscription(client: string, topic: string): Promise<Subscription> {
