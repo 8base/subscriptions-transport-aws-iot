@@ -12,7 +12,6 @@ export class OnSubscribeIotTopic implements ISubscribeHandler {
     }
 
     async subscribe(info: SubscribeInfo, options: any): Promise<void> {
-        // const topic = path.join(info.client, info.topic);
         await this.client.subscribe(info.topic, options);
     }
 

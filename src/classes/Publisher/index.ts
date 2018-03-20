@@ -5,14 +5,14 @@ import * as path from "path";
 
 export class Publisher implements IPublisherClient {
 
-    async publish(client: string, topic: string, payload: Buffer): Promise<void> {
+    async publish(topic: string, payload: any): Promise<void> {
 
         // TODO protect publish topic
 
         const iotData = new aws.IotData({ endpoint: Config.iotEndpoint });
         await iotData.publish({
-            topic: path.join(Config.onPubslishTopicPrefix, client, topic),
-            payload
+            topic,
+            payload: JSON.stringify(payload)
         }).promise();
     }
 

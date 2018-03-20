@@ -19,6 +19,6 @@ export async function deployFlow(config: string, role: string) {
     console.log("start create iot rules");
     const iot = new aws.Iot();
     await Promise.all(rules.map( async r => await AwsRules.undeploy(iot, r)));
-    await Promise.all(rules.map( async r => await AwsRules.deploy(iot, r, uploadedFunctions)));
+    await Promise.all(rules.map( async r => await AwsRules.deploy(iot, lambda, r, uploadedFunctions)));
 
 }

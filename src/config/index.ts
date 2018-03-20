@@ -6,7 +6,14 @@ export class Config {
     static userPoolClientId: string;
     static debugMqttClient: boolean = false;
 
-    static get onPubslishTopicPrefix(): string {
-        return "on_publish";
+}
+
+export class PredefineTopics {
+    static get messageProcessing(): string {
+        return "message_processing";
+    }
+
+    static get subscribe(): string {
+        return "subscribe";
     }
 }

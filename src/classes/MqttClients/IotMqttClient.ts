@@ -4,7 +4,7 @@ import * as DeviceSdk from 'aws-iot-device-sdk';
 import { CognitoConnectOptions } from "../../types";
 import { IConnectOptionsResolver } from "../../interfaces";
 import { Config } from '../../config';
-
+import { ClientIdTransform } from "../Common";
 
 export class IotMqttClient implements IMqttClient {
 
@@ -13,11 +13,11 @@ export class IotMqttClient implements IMqttClient {
 
     private client: DeviceSdk.device;
 
-    constructor(client: string) {
+    constructor(clientId: string) {
         this.client = new DeviceSdk.device({
             region: Config.region,
             host: Config.iotEndpoint,
-            clientId: client + `${Math.floor((Math.random() * 1000000) + 1)}`,
+            clientId: ClientIdTransform.fromUser(clientId),
             protocol: 'wss',
             accessKeyId: '',
             secretKey:  '',

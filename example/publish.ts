@@ -1,5 +1,5 @@
 
-import { PublisherEnvironment } from "../src/factories";
+import { PublishEnvironment } from "../src/factories";
 import { Config } from "../src/config";
 import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails, CognitoUserSession } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk";
@@ -25,6 +25,6 @@ if (process.argv.length < 4) {
 const topic = process.argv[2];
 const payload = process.argv[3];
 
-PublisherEnvironment.publish(topic, payload);
+// PublishEnvironment.publish(topic, payload);
 
 console.log("pusblish success");

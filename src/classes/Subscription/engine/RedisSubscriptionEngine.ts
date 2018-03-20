@@ -11,9 +11,9 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
     this.redis = redis;
   }
 
-  static async create(redisEndpoint: string, port: number): Promise<ISubscriptionEngine> {
+  static async create(redisEndpoint: string): Promise<ISubscriptionEngine> {
     return new Promise<ISubscriptionEngine>((resolve, reject) => {
-      const redis = new Redis("test-redis.3lfqwv.ng.0001.use1.cache.amazonaws.com:6379");
+      const redis = new Redis(redisEndpoint);
 
       redis.on("error", (err: Error) => {
         console.log(err.message);
@@ -60,10 +60,6 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
   async setClientInactive(client: string): Promise<void> {
     return await this.redis.set(SubscriptionPathEngine.clientKey(client), ClientStatus.inactive);
   }
-
-  /*
-    Private functions
-  */
 
 }
 

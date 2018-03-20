@@ -14,11 +14,11 @@ export interface ConnectOptions {
 }
 
 export interface SubscribeInfo {
-    query?: DocumentNode;
-
+    query?: string;
+    DocumentNode?: DocumentNode;
     topic: string;
-
-    // client: string;
+    filter?: string;
+    clientId?: string;
 }
 
 export interface CognitoConnectOptions extends ConnectOptions {

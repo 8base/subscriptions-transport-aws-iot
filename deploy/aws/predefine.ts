@@ -1,5 +1,5 @@
 import { ruleT, functionT } from "./types";
-import { Config } from '../../src/config';
+import { PredefineTopics } from '../../src/config';
 
 
 export const functions: functionT[] = [
@@ -19,9 +19,20 @@ export const functions: functionT[] = [
       handler: "OnMessageProcessing.handler"
     },
     {
-      name: "GetDataFromRedis",
+      name: "GetClient",
       arn: "",
-      handler: "GetDataFromRedis.handler"
+      handler: "GetClient.handler"
+    },
+    {
+      name: "GetSubscription",
+      arn: "",
+      handler: "GetSubscription.handler"
+    },
+
+    {
+      name: "OnSubscribe",
+      arn: "",
+      handler: "OnSubscribe.handler"
     }
 ];
 
@@ -29,7 +40,12 @@ export const rules: ruleT[] = [
     {
       functionName: "OnMessageProcessing",
       name: "OnMessageProcessing",
-      sql: `SELECT * FROM '${Config.onPubslishTopicPrefix}'`
+      sql: `SELECT * FROM '${PredefineTopics.messageProcessing}'`
+    },
+    {
+      functionName: "OnSubscribe",
+      name: "OnSubscribe",
+      sql: `SELECT * FROM '${PredefineTopics.subscribe}'`
     },
     {
       functionName: "OnConnected",

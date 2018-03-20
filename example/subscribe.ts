@@ -65,12 +65,12 @@ cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (session: CognitoUserSession) => {
         const client = SubscriptionEnvironment
                 .Client
-                .create()
+                .create(user)
                 .transport(SubscriptionEnvironment.Transport.Iot(user))
                 .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
                 .client();
 
-        client.subscribe( { topic: "test-topic" }, { qos: 1 }).subscribe(observer);
+        client.subscribe( { topic: "test-topic", query: "qwreqwr" }, { qos: 1 }).subscribe(observer);
     },
     onFailure: (err: Error) => {
         console.log(err);

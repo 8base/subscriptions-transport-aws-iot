@@ -19,10 +19,13 @@ export class SubscriptionClient {
     */
     private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
-    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[]) {
+    private clientId: string;
+
+    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[], clientId: string) {
         this.resolver = resolver;
         this.mqttClient = mqttClient;
         this.handlers = handlers;
+        this.clientId = clientId;
 
         this.mqttClient.connect(
             this.resolver,
@@ -32,6 +35,8 @@ export class SubscriptionClient {
     }
 
     subscribe(info: SubscribeInfo, options: IClientSubscribeOptions): Observable<FetchResult> {
+        info.clientId = this.clientId;
+
         const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.topic));
 
         Promise.all(this.handlers.map(handler => handler.subscribe(info, options)))

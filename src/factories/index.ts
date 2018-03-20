@@ -4,9 +4,10 @@ import {
     IotMqttClient,
     CognitoConnectionResolver,
     OnSubscribeIotTopic,
+    OnSaveSubscription,
     RedisSubscriptionEngine,
 } from "../classes";
-import { Config } from "../config";
+import { Config, PredefineTopics } from "../config";
 import {
     IMqttClient,
     ISubscribeHandler,
@@ -14,12 +15,13 @@ import {
     ISubscriptionEngine
 } from '../interfaces';
 
+import * as path from "path";
 
 export namespace SubscriptionEnvironment {
 
     export namespace Transport {
-        export function Iot(client: string): IMqttClient {
-            return new IotMqttClient(client);
+        export function Iot(clientId: string): IMqttClient {
+            return new IotMqttClient(clientId);
         }
     }
 
@@ -33,9 +35,14 @@ export namespace SubscriptionEnvironment {
         private mqttClient: IMqttClient;
         private resolver: IConnectOptionsResolver;
         private handlers: ISubscribeHandler[] = [];
+        private clientId: string;
 
-        static create(): Client {
-            return new Client();
+        constructor(clientId: string) {
+            this.clientId = clientId;
+        }
+
+        static create(clientId: string): Client {
+            return new Client(clientId);
         }
 
         transport(transport: IMqttClient): Client {
@@ -55,20 +62,32 @@ export namespace SubscriptionEnvironment {
 
         client() {
             this.addHandler(new OnSubscribeIotTopic(this.mqttClient));
-            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers);
+            this.addHandler(new OnSaveSubscription());
+            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers, this.clientId);
         }
     }
 
-    export async function SubscriptionEngine(redisEndpoint: string, port: number): Promise<ISubscriptionEngine> {
-        return await RedisSubscriptionEngine.create(redisEndpoint, port);
+    export async function SubscriptionEngine(redisEndpoint: string): Promise<ISubscriptionEngine> {
+        return await RedisSubscriptionEngine.create(redisEndpoint);
     }
 }
 
-export namespace PublisherEnvironment {
+export namespace PublishEnvironment {
 
-    export function publish(client: string, topic: string, payload: any) {
-        new Publisher().publish(client, topic, payload);
+    export namespace ToMessageProcessing {
+        export async function publish(client: string, topic: string, payload: any) {
+            const resultTopic = path.join(PredefineTopics.messageProcessing, client, topic);
+            await (new Publisher()).publish(resultTopic, payload);
+        }
     }
+
+    export namespace ToSubscribeQueue {
+        export async function publish(payload: any) {
+            const topic = PredefineTopics.subscribe;
+            await (new Publisher()).publish(topic, payload);
+        }
+    }
+
 }
 
 export namespace PolicyEnvironment {
