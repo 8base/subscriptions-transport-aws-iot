@@ -9,6 +9,7 @@ import * as path from "path";
 import { deployFlow } from "./aws";
 
 import { Config } from "../src/config";
+import { PredefineTopicPrefix } from '../src/classes/Common/TopicPrefix';
 
 let parameters = new Map<string, string>();
 _.map(parseArgs(process.argv), (value: string, key: string) => parameters.set(key, value));
@@ -40,7 +41,7 @@ const config = JSON.stringify(
   {
     redisEndpoint,
     topicPrefixes: {
-      onPublish: Config.onPubslishTopicPrefix
+      onPublish: PredefineTopicPrefix.onPublish
     }
   });
 

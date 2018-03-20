@@ -2,15 +2,17 @@
 const { SubscriptionEnvironment } = require("../../src");
 const config = require("./config.json");
 
+/*
+  Function call from onSaveSubscription handler
+*/
+
 module.exports.handler = (event, context, callback) => {
 
-  console.log("event data " + JSON.stringify(event, null, 2));
-  
   let engineRef = null;
   SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
     .then(engine => {
       engineRef = engine;
-      return engine.setUserActive(event.user);
+      return engine.subscribeUser(event.user, event.topic, event.query, event.filter);
     })
     .then(() => {
       return engineRef.disconnect();

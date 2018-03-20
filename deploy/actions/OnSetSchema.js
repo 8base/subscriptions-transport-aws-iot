@@ -1,5 +1,5 @@
 
-const { SubscriptionEnvironment } = require("./src");
+const { SubscriptionEnvironment } = require("../../src");
 const config = require("./config.json");
 
 /*
@@ -12,7 +12,7 @@ module.exports.handler = (event, context, callback) => {
   SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
     .then(engine => {
       engineRef = engine;
-      return engine.subscribeClient(event.clientId, event.topic, event.query, event.filter);
+      return engine.setSchema(event.schema);
     })
     .then(() => {
       return engineRef.disconnect();

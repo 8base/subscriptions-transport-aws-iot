@@ -15,5 +15,4 @@ export class Publisher implements IPublisherClient {
             payload: JSON.stringify(payload)
         }).promise();
     }
-
 }

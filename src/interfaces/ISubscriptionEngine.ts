@@ -1,35 +1,30 @@
-export type Client = string;
+import { SubscribeInfo } from "../types";
 
-export interface Subscription {
-
-    topic: string;
-
-    query: string;
-
-    filter: string;
-
-    isActive: boolean;
-}
-
-export enum ClientStatus {
+export enum UserStatus {
   active = 'active',
   inactive = 'inactive'
 }
 
 export interface ISubscriptionEngine {
 
-    /* async */ getSubscription(client: Client, topic: string): Promise<Subscription>;
+    /* async */ getSubscription(room: string, user: string, topic: string): Promise<SubscribeInfo>;
 
-    /* async */ setClientActive(client: Client): Promise<void>;
+    /* async */ getSubscriptions(room: string, topic: string): Promise<SubscribeInfo[]>;
 
-    /* async */ setClientInactive(client: Client): Promise<void>;
+    /* async */ setUserActive(user: string): Promise<void>;
 
-    /* async */ ClientStatus(client: Client): Promise<ClientStatus>;
+    /* async */ setUserInactive(user: string): Promise<void>;
 
-    /* async */ subscribeClient(client: Client, topic: string, query: string, filter: string): Promise<void>;
+    /* async */ userStatus(user: string): Promise<UserStatus>;
 
-    /* async */ unsubscribeClient(client: Client, topic: string): Promise<void>;
+    /* async */ subscribeUser(room: string, user: string, topic: string, query: string, filter: string): Promise<void>;
+
+    /* async */ unsubscribeUser(room: string, user: string, topic: string): Promise<void>;
 
     /* async */ disconnect(): Promise<void>;
+
+    /* async */ getSchema(): Promise<string>;
+
+    /* async */ setSchema(schema: string): Promise<void>;
 }
 

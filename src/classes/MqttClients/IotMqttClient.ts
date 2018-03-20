@@ -13,11 +13,11 @@ export class IotMqttClient implements IMqttClient {
 
     private client: DeviceSdk.device;
 
-    constructor(clientId: string) {
+    constructor(user: string) {
         this.client = new DeviceSdk.device({
             region: Config.region,
             host: Config.iotEndpoint,
-            clientId: ClientIdTransform.fromUser(clientId),
+            clientId: ClientIdTransform.fromUser(user),
             protocol: 'wss',
             accessKeyId: '',
             secretKey:  '',
@@ -48,13 +48,11 @@ export class IotMqttClient implements IMqttClient {
 
     async connect(connectOptionsResolver: IConnectOptionsResolver, onReceive: Function, onClose: Function): Promise<void> {
 
-        console.log("mqtt connect");
         this.onReceive = onReceive;
         this.onClose = onClose;
 
         const options = await connectOptionsResolver.resolve();
 
-        console.log(options);
         this.client.updateWebSocketCredentials(options.accessKeyId, options.secretAccessKey, options.sessionToken, null);
     }
 

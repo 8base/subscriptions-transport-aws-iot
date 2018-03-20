@@ -19,7 +19,7 @@ export namespace SourceCode {
         archive.append(config, { name: "config.json" });
         archive.directory(nodeModulesPath, "node_modules");
         archive.directory(path.join(lib, "src"), "src");
-        archive.directory(path.join(lib, "deploy", "actions"), false);
+        archive.directory(path.join(lib, "deploy", "actions"), path.join("deploy", "actions"));
 
         return new Promise<{path: string}>((resolve, reject) => {
 

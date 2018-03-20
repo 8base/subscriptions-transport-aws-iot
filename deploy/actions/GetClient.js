@@ -1,5 +1,5 @@
 
-const { SubscriptionEnvironment } = require("./src");
+const { SubscriptionEnvironment } = require("../../src");
 const config = require("./config.json");
 
 module.exports.handler = (event, context, callback) => {

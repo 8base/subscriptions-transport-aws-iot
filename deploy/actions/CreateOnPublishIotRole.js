@@ -1,5 +1,5 @@
 
-const { SubscriptionEnvironment } = require("./src");
+const { SubscriptionEnvironment } = require("../../src");
 const config = require("./config.json");
 
 module.exports.handler = (event, context, callback) => {
@@ -11,7 +11,7 @@ module.exports.handler = (event, context, callback) => {
   SubscriptionEnvironment.StatusEngine(config.redisEndpoint)
     .then(engine => {
       engineRef = engine;
-      return engine.setClientActive(event.clientId);
+      return engine.setUserActive(event.clientId);
     })
     .then(() => {
       return engineRef.disconnect();

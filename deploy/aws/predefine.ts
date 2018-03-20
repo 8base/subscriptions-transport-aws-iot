@@ -1,51 +1,57 @@
 import { ruleT, functionT } from "./types";
-import { PredefineTopics } from '../../src/config';
+import { PredefineTopicPrefix } from '../../src/classes';
+import * as path from "path";
 
+const pathToActions = path.join("deploy", "actions");
 
 export const functions: functionT[] = [
     {
       name: "OnConnected",
       arn: "",
-      handler: "OnConnected.handler"
+      handler: path.join(pathToActions, "OnConnected.handler")
     },
     {
       name: "OnDisconnected",
       arn: "",
-      handler: "OnDisconnected.handler"
+      handler: path.join(pathToActions, "OnDisconnected.handler")
     },
     {
-      name: "OnMessageProcessing",
+      name: "OnNewMessage",
       arn: "",
-      handler: "OnMessageProcessing.handler"
+      handler: path.join(pathToActions, "OnNewMessage.handler")
     },
     {
       name: "GetClient",
       arn: "",
-      handler: "GetClient.handler"
+      handler: path.join(pathToActions, "GetClient.handler")
     },
     {
       name: "GetSubscription",
       arn: "",
-      handler: "GetSubscription.handler"
+      handler: path.join(pathToActions, "GetSubscription.handler")
     },
-
     {
-      name: "OnSubscribe",
+      name: "OnNewSubscribe",
       arn: "",
-      handler: "OnSubscribe.handler"
+      handler: path.join(pathToActions, "OnNewSubscribe.handler")
+    },
+    {
+      name: "OnSetSchema",
+      arn: "",
+      handler: path.join(pathToActions, "OnSetSchema.handler")
     }
 ];
 
 export const rules: ruleT[] = [
     {
-      functionName: "OnMessageProcessing",
-      name: "OnMessageProcessing",
-      sql: `SELECT * FROM '${PredefineTopics.messageProcessing}'`
+      functionName: "OnNewMessage",
+      name: "OnNewMessage",
+      sql: `SELECT * FROM '${PredefineTopicPrefix.onNewMessage}'`
     },
     {
-      functionName: "OnSubscribe",
-      name: "OnSubscribe",
-      sql: `SELECT * FROM '${PredefineTopics.subscribe}'`
+      functionName: "OnNewSubscribe",
+      name: "OnNewSubscribe",
+      sql: `SELECT * FROM '${PredefineTopicPrefix.onNewSubscribe}'`
     },
     {
       functionName: "OnConnected",
@@ -56,5 +62,10 @@ export const rules: ruleT[] = [
       functionName: "OnDisconnected",
       name: "OnDisconnected",
       sql: `SELECT * FROM '$aws/events/presence/disconnected/#'`
+    },
+    {
+      functionName: "OnSetSchema",
+      name: "OnSetSchema",
+      sql: `SELECT * FROM '${PredefineTopicPrefix.onSetSchema}'`
     }
 ];
