@@ -3,6 +3,7 @@ import { Config } from "../src/config";
 import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails, CognitoUserSession } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk";
 import "isomorphic-fetch";
+import { } from "graphql";
 
 import * as parseArgs from "minimist";
 import * as _ from "lodash";
@@ -65,12 +66,12 @@ cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (session: CognitoUserSession) => {
         const client = SubscriptionEnvironment
                 .Client
-                .create(user)
-                .transport(SubscriptionEnvironment.Transport.Iot(user))
+                .create("room1", "user1")
+                .transport(SubscriptionEnvironment.Transport.Iot)
                 .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
                 .client();
 
-        client.subscribe( { topic: "test-topic", query: "qwreqwr" }, { qos: 1 }).subscribe(observer);
+        client.subscribe( { topic: "test-topic", room: "room1", user: "user1" }, { qos: 1 }).subscribe(observer);
     },
     onFailure: (err: Error) => {
         console.log(err);

@@ -10,10 +10,10 @@ module.exports.handler = (event, context, callback) => {
   SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
     .then((engine) => {
       engineRef = engine;
-      return engine.getSubscription(event.room, event.user, event.topic);
+      return engine.getSubscriptions(event.room, event.topic);
     })
-    .then((subscription) => {
-      console.log(subscription);
+    .then((subscriptions) => {
+      console.log(subscriptions);
       return engineRef.disconnect();
     })
     .then(() => {

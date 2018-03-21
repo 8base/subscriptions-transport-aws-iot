@@ -38,7 +38,7 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
   }
 
   async getSubscription(room: string, user: string, topic: string): Promise<SubscribeInfo> {
-    const subscription = await this.redis.get(KeysPrefix.topic(room, user, topic));
+    const subscription = await this.redis.hget(KeysPrefix.roomTopic(room, topic), user);
 
     if (!subscription) {
       return null;

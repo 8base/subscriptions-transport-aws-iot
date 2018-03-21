@@ -1,44 +1,47 @@
 import { ruleT, functionT } from "./types";
-import { PredefineTopicPrefix } from '../../src/classes';
 import * as path from "path";
-
-const pathToActions = path.join("deploy", "actions");
+import { PredefineTopicPrefix } from '../../src/classes';
 
 export const functions: functionT[] = [
     {
       name: "OnConnected",
       arn: "",
-      handler: path.join(pathToActions, "OnConnected.handler")
+      handler: "index.OnConnected"
     },
     {
       name: "OnDisconnected",
       arn: "",
-      handler: path.join(pathToActions, "OnDisconnected.handler")
+      handler: "index.OnDisconnected"
     },
     {
       name: "OnNewMessage",
       arn: "",
-      handler: path.join(pathToActions, "OnNewMessage.handler")
+      handler: "index.OnNewMessage"
     },
     {
       name: "GetClient",
       arn: "",
-      handler: path.join(pathToActions, "GetClient.handler")
+      handler: "index.GetClient"
     },
     {
       name: "GetSubscription",
       arn: "",
-      handler: path.join(pathToActions, "GetSubscription.handler")
+      handler: "index.GetSubscription"
+    },
+    {
+      name: "GetSubscriptions",
+      arn: "",
+      handler: "index.GetSubscriptions"
     },
     {
       name: "OnNewSubscribe",
       arn: "",
-      handler: path.join(pathToActions, "OnNewSubscribe.handler")
+      handler: "index.OnNewSubscribe"
     },
     {
       name: "OnSetSchema",
       arn: "",
-      handler: path.join(pathToActions, "OnSetSchema.handler")
+      handler: "index.OnSetSchema"
     }
 ];
 

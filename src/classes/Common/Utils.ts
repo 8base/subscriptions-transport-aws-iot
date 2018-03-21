@@ -8,9 +8,10 @@ import { Operation } from "apollo-link";
 export function ApolloLinkOperationToSubscribeInfo(operation: Operation): SubscribeInfo {
 
     return {
-        query: "",
-        DocumentNode: operation.query,
-        topic: queryToTopic(operation.query)
+        query: operation.query,
+        topic: queryToTopic(operation.query),
+        user: "",
+        room: ""
     };
 }
 

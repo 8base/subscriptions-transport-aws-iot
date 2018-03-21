@@ -22,9 +22,10 @@ import { SubscribeInfo } from '../types';
 export namespace SubscriptionEnvironment {
 
     export namespace Transport {
-        export function Iot(user: string): IMqttClient {
+
+        export const Iot = (user: string): IMqttClient => {
             return new IotMqttClient(user);
-        }
+        };
     }
 
     export namespace Auth {
@@ -37,18 +38,20 @@ export namespace SubscriptionEnvironment {
         private mqttClient: IMqttClient;
         private resolver: IConnectOptionsResolver;
         private handlers: ISubscribeHandler[] = [];
-        private clientId: string;
+        private room: string;
+        private user: string;
 
-        constructor(clientId: string) {
-            this.clientId = clientId;
+        constructor(room: string, user: string) {
+            this.room = room;
+            this.user = user;
         }
 
-        static create(clientId: string): Client {
-            return new Client(clientId);
+        static create(room: string, user: string): Client {
+            return new Client(room, user);
         }
 
-        transport(transport: IMqttClient): Client {
-            this.mqttClient = transport;
+        transport(factory: Function): Client {
+            this.mqttClient = factory(this.user);
             return this;
         }
 
@@ -65,7 +68,7 @@ export namespace SubscriptionEnvironment {
         client() {
             this.addHandler(new OnSubscribeIotTopic(this.mqttClient));
             this.addHandler(new OnSaveSubscription());
-            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers, this.clientId);
+            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers, this.room, "");
         }
     }
 
@@ -85,13 +88,13 @@ export namespace ServiceEnvironment {
             await PublishEnvironment.publish(topic, info);
         }
 
-        export async function processMessage(clientId: string, topic: string, payload: any) {
-            const fulltopic = path.join(PredefineTopicPrefix.onNewMessage, clientId, topic);
-            await PublishEnvironment.publish(fulltopic, payload);
+        export async function processMessage(room: string, topic: string, payload: any) {
+            const fulltopic = path.join(PredefineTopicPrefix.onNewMessage, room, topic);
+            await PublishEnvironment.publish(fulltopic, { payload });
         }
 
-        export async function publishMessage(clientId: string, topic: string, payload: any) {
-            const fulltopic = path.join(PredefineTopicPrefix.onPublish, clientId, topic);
+        export async function publishMessage(room: string, topic: string, payload: any) {
+            const fulltopic = path.join(PredefineTopicPrefix.onPublish, room, topic);
             await PublishEnvironment.publish(fulltopic, payload);
         }
     }

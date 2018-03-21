@@ -19,13 +19,15 @@ export class SubscriptionClient {
     */
     private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
-    private clientId: string;
+    private user: string;
+    private room: string;
 
-    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[], clientId: string) {
+    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[], room: string, user: string) {
         this.resolver = resolver;
         this.mqttClient = mqttClient;
         this.handlers = handlers;
-        this.clientId = clientId;
+        this.room = room;
+        this.user = user;
 
         this.mqttClient.connect(
             this.resolver,
@@ -35,7 +37,6 @@ export class SubscriptionClient {
     }
 
     subscribe(info: SubscribeInfo, options: IClientSubscribeOptions): Observable<FetchResult> {
-        info.clientId = this.clientId;
 
         const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.topic));
 

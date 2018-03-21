@@ -27,10 +27,6 @@ export class KeysPrefix {
       return `${KeysPrefix.usersInRoomPrefix}_${room}`;
     }
 
-    static topic(room: string, user: string, topic: string) {
-      return `${KeysPrefix.topicInfoPrefix}_${room}_${user}_${topic}`;
-    }
-
     static roomTopic(room: string, topic: string): string {
       return `${KeysPrefix.roomTopicPrefix}_${room}_${topic}`;
     }
