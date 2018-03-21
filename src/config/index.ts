@@ -7,13 +7,3 @@ export class Config {
     static debugMqttClient: boolean = false;
 
 }
-
-export class PredefineTopics {
-    static get messageProcessing(): string {
-        return "message_processing";
-    }
-
-    static get subscribe(): string {
-        return "subscribe";
-    }
-}

@@ -4,7 +4,7 @@ import * as DeviceSdk from 'aws-iot-device-sdk';
 import { CognitoConnectOptions } from "../../types";
 import { IConnectOptionsResolver } from "../../interfaces";
 import { Config } from '../../config';
-import { ClientIdTransform } from "../Common";
+import { ServiceEnvironment } from "../../factories";
 
 export class IotMqttClient implements IMqttClient {
 
@@ -17,7 +17,7 @@ export class IotMqttClient implements IMqttClient {
         this.client = new DeviceSdk.device({
             region: Config.region,
             host: Config.iotEndpoint,
-            clientId: ClientIdTransform.fromUser(user),
+            clientId: ServiceEnvironment.IotClientIdTransform.userToClientId(user),
             protocol: 'wss',
             accessKeyId: '',
             secretKey:  '',

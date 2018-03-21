@@ -1,27 +1,27 @@
 
 const { SubscriptionEnvironment } = require("../../src");
-const config = require("./config.json");
+const staticConfig = require("./staticConfig.json");
 
 module.exports.handler = (event, context, callback) => {
 
   console.log("event data " + JSON.stringify(event, null, 2));
   
   let engineRef = null;
-  SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
+  let subscriptionRef = null;
+  SubscriptionEnvironment.SubscriptionEngine(staticConfig.redisEndpoint)
     .then((engine) => {
       engineRef = engine;
       return engine.getSubscription(event.room, event.user, event.topic);
     })
     .then((subscription) => {
-      console.log(subscription);
+      subscriptionRef = subscription;
       return engineRef.disconnect();
     })
     .then(() => {
-      callback();
+      callback(null, subscriptionRef);
     })
     .catch(err => {
-      console.log(err.message);
-      callback();
+      callback(err);
     });
 };
 

@@ -1,6 +1,6 @@
 
 const { SubscriptionEnvironment } = require("../../src");
-const config = require("./config.json");
+const staticConfig = require("./staticConfig.json");
 
 /*
   Function call from onSaveSubscription handler
@@ -9,10 +9,10 @@ const config = require("./config.json");
 module.exports.handler = (event, context, callback) => {
 
   let engineRef = null;
-  SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
+  SubscriptionEnvironment.SubscriptionEngine(staticConfig.redisEndpoint)
     .then(engine => {
       engineRef = engine;
-      return engine.subscribeUser(event.user, event.topic, event.query, event.filter);
+      return engine.subscribeUser(event.room, event.user, event.topic, event.query, event.filter);
     })
     .then(() => {
       return engineRef.disconnect();
@@ -21,8 +21,7 @@ module.exports.handler = (event, context, callback) => {
       callback();
     })
     .catch(err => {
-      console.log(err.message);
-      callback();
+      callback(err);
     });
 };
 

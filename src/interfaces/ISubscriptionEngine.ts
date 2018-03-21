@@ -17,6 +17,8 @@ export interface ISubscriptionEngine {
 
     /* async */ userStatus(user: string): Promise<UserStatus>;
 
+    /* async */ activeUsers(): Promise<string[]>;
+
     /* async */ subscribeUser(room: string, user: string, topic: string, query: string, filter: string): Promise<void>;
 
     /* async */ unsubscribeUser(room: string, user: string, topic: string): Promise<void>;
@@ -26,5 +28,7 @@ export interface ISubscriptionEngine {
     /* async */ getSchema(): Promise<string>;
 
     /* async */ setSchema(schema: string): Promise<void>;
+
+    /* async */ clearAll(): Promise<void>;
 }
 

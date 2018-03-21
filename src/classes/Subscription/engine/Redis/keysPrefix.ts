@@ -1,3 +1,5 @@
+import { UserStatus } from '../../../../interfaces';
+
 
 /*
   keys prefixs
@@ -19,8 +21,8 @@ export class KeysPrefix {
 
     private static schemaPrefix = "schema";
 
-    static userStatus(user: string): string {
-      return `${KeysPrefix.clientStatusPrefix}_${user}`;
+    static userStatus(status: UserStatus): string {
+      return `${KeysPrefix.clientStatusPrefix}_${status.toString()}`;
     }
 
     static usersInRoom(room: string): string {

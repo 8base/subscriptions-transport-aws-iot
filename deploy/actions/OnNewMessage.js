@@ -1,42 +1,57 @@
-const { SubscriptionEnvironment, ServiceEnvironment } = require.resolve("./src");
-const config = require("./config.json");
-const { execute, parse, GraphQLSchema } = require('graphql');
-const gql = require("graphql-tag")
+const { SubscriptionEnvironment, ServiceEnvironment, PublishEnvironment, Config } = require("../../src");
+const staticConfig = require("./staticConfig.json");
+const { setEnvironment } = require("./Common");
+
+
 /*
   function call to process new message
 
+  event: {
+    message: {
+      // data of message
+    }
+  }
 */
 
 module.exports.handler = (event, context, callback) => {
-  console.log("event data " + JSON.stringify(event, null, 2));
+
+  setEnvironment(staticConfig);
+
+  console.log(JSON.stringify(event, null, 2));
+  console.log("redis = " + staticConfig.redisEndpoint);
+
   let engineRef = null;
   let schemaRef = null;
-  SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
+  SubscriptionEnvironment.SubscriptionEngine(staticConfig.redisEndpoint)
     .then(engine => {
       engineRef = engine;
-      return engine.getSubscriptions(event.room, event.topic);
+      return engine.getSchema(event.room, event.topic);
     })
     .then(schema => {
-      schemaRef = gql(schema);
+      //schemaRef = gql(schema);
       console.log(schema);
-      console.log(schemaRef);
+      //console.log(schemaRef);
       return engineRef.getSubscriptions(event.room, event.topic);
     })
     .then(subscriptions => {
-      console.log(subscriptions);
-      subscriptions.map(subscription => {
-        
-        return execute(
-          {
-            schema: schemaRef,
-            document: subscription.query,
-            rootValue: event.payload
-          }
-        )
-      })
+      return Promise.all(subscriptions.map(subscription => {
+        return {
+          subscription,
+          data: ServiceEnvironment.Schema.execute(schemaRef, event.message)
+        }
+      }
+      ));
     })
     .then((res) => {
-      console.log(res);
+      return Promise.all(
+        res.map(r =>
+          PublishEnvironment.Client.sendProcessedMessageToTopic(
+            r.subscription.room,
+            r.subscription.user,
+            r.subscription.topic,
+            r.data)
+        )
+      );
     })
     .then(() => {
       return engineRef.disconnect();
@@ -45,8 +60,7 @@ module.exports.handler = (event, context, callback) => {
       callback();
     })
     .catch(err => {
-      console.log(err.message);
-      callback();
+      callback(err);
     });
 };
 

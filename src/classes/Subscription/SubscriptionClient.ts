@@ -2,7 +2,7 @@
 import { ApolloLink, Operation, NextLink, FetchResult } from "apollo-link";
 import { ISubscribeHandler, IMqttClient, IConnectOptionsResolver } from "../../interfaces";
 import { SubscribeInfo } from "../../types";
-import { TopicObservable } from '../Common';
+import { TopicObservable } from '../Topic';
 import { IClientSubscribeOptions } from 'mqtt';
 import { Observable } from "zen-observable-ts";
 
@@ -40,7 +40,7 @@ export class SubscriptionClient {
 
         const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.topic));
 
-        Promise.all(this.handlers.map(handler => handler.subscribe(info, options)))
+        Promise.all(this.handlers.map(handler => handler.subscribe(this.room, this.user, info, options)))
             .catch((err: Error) => {
                 observable.onError(err);
             });

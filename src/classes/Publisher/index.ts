@@ -8,11 +8,13 @@ export class Publisher implements IPublisherClient {
     async publish(topic: string, payload: any): Promise<void> {
 
         // TODO protect publish topic
+        console.log(Config.iotEndpoint);
 
         const iotData = new aws.IotData({ endpoint: Config.iotEndpoint });
         await iotData.publish({
             topic,
-            payload: JSON.stringify(payload)
+            payload: JSON.stringify(payload),
+            qos: 0
         }).promise();
     }
 }

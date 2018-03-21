@@ -6,7 +6,7 @@ import * as archiver from "archiver";
 import * as fs from "fs";
 import * as path from "path";
 
-import { deployFlow } from "./aws";
+import { undeployFlow } from "./aws";
 
 import { Config } from "../src/config";
 import { PredefineTopics } from '../src/classes';
@@ -17,10 +17,6 @@ _.map(parseArgs(process.argv), (value: string, key: string) => parameters.set(ke
 aws.config.accessKeyId = parameters.get("access-key-id");
 aws.config.secretAccessKey = parameters.get("secret-access-key");
 aws.config.region = parameters.get("region");
-const role = parameters.get("role-name");
-
-const redisEndpoint = parameters.get("redis-endpoint");
-const iotEndpoint = parameters.get("iot-endpoint");
 
 if (!aws.config.accessKeyId) {
   console.log("access key not present");
@@ -35,21 +31,11 @@ if (!aws.config.secretAccessKey) {
 console.log("access key id = " + aws.config.accessKeyId);
 console.log("secret access key = " + aws.config.secretAccessKey);
 console.log("region = " + aws.config.region);
-console.log("role = " + role);
-console.log("redis endpoint = " + redisEndpoint);
-console.log("iot endpoint = " + iotEndpoint);
 
-const config = JSON.stringify(
-  {
-    region: aws.config.region,
-    iotEndpoint,
-    redisEndpoint
-  }, null, 2);
-
-deployFlow(config, role)
+undeployFlow()
   .then(() => {
-    console.log("deploy success");
+    console.log("undeploy success");
   })
   .catch((err: Error) => {
-    console.log("deploy error = " + err.message);
+    console.log("undeploy error = " + err.message);
   });

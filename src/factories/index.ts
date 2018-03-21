@@ -6,7 +6,8 @@ import {
     OnSubscribeIotTopic,
     OnSaveSubscription,
     RedisSubscriptionEngine,
-    PredefineTopicPrefix
+    PredefineTopics,
+    executeSchema
 } from "../classes";
 import { Config } from "../config";
 import {
@@ -68,7 +69,7 @@ export namespace SubscriptionEnvironment {
         client() {
             this.addHandler(new OnSubscribeIotTopic(this.mqttClient));
             this.addHandler(new OnSaveSubscription());
-            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers, this.room, "");
+            return new SubscriptionClient(this.resolver, this.mqttClient, this.handlers, this.room, this.user);
         }
     }
 
@@ -79,37 +80,66 @@ export namespace SubscriptionEnvironment {
 
 export namespace ServiceEnvironment {
 
+    export namespace Schema {
+
+        export async function execute(schema: any, values: any ): Promise<any> {
+            return values;
+        }
+    }
+
+    export namespace IotClientIdTransform {
+
+        function getRandomArbitrary(min: number, max: number) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        export function clientIdToUser(clientId: string): string {
+            return clientId.slice(0, -6);
+        }
+
+        export function userToClientId(user: string): string {
+            return user + "_" + getRandomArbitrary(10000, 99999).toString();
+        }
+    }
+}
+
+export namespace PublishEnvironment {
+
+    export namespace Room {
+
+    }
+
     /*
         call from server
     */
     export namespace Client {
         export async function subscribe(info: SubscribeInfo) {
-            const topic = PredefineTopicPrefix.onNewSubscribe;
+            const topic = PredefineTopics.onNewSubscribe;
             await PublishEnvironment.publish(topic, info);
         }
 
-        export async function processMessage(room: string, topic: string, payload: any) {
-            const fulltopic = path.join(PredefineTopicPrefix.onNewMessage, room, topic);
-            await PublishEnvironment.publish(fulltopic, { payload });
+        export async function sendSourceMessageToTopic(room: string, topic: string, payload: any) {
+            console.log(PredefineTopics.onRoomNewMessage(room));
+            await PublishEnvironment.publish(
+                PredefineTopics.onRoomNewMessage(room),
+                {
+                    message: payload,
+                    room,
+                    topic
+                });
         }
 
-        export async function publishMessage(room: string, topic: string, payload: any) {
-            const fulltopic = path.join(PredefineTopicPrefix.onPublish, room, topic);
-            await PublishEnvironment.publish(fulltopic, payload);
+        export async function sendProcessedMessageToTopic(room: string, user: string, topic: string, payload: any) {
+            await PublishEnvironment.publish(PredefineTopics.publicTopic(room, user, topic), payload);
         }
     }
 
     export namespace Schema {
 
         export async function set(schema: string): Promise<void> {
-            const topic = PredefineTopicPrefix.onSetSchema;
-            await PublishEnvironment.publish(topic, { schema });
+            await PublishEnvironment.publish(PredefineTopics.onSetSchema, { schema });
         }
     }
-
-}
-
-export namespace PublishEnvironment {
 
     export async function publish(topic: string, payload: any) {
         await (new Publisher()).publish(topic, payload);

@@ -7,18 +7,18 @@ module.exports.handler = (event, context, callback) => {
   console.log("event data " + JSON.stringify(event, null, 2));
   
   let engineRef = null;
-  let subscriptionsRef = null;
+  let usersRef = null;
   SubscriptionEnvironment.SubscriptionEngine(staticConfig.redisEndpoint)
     .then((engine) => {
       engineRef = engine;
-      return engine.getSubscriptions(event.room, event.topic);
+      return engine.activeUsers();
     })
-    .then((subscriptions) => {
-      subscriptionsRef = subscriptions;
+    .then((users) => {
+      usersRef = users;
       return engineRef.disconnect();
     })
     .then(() => {
-      callback(null, subscriptionsRef);
+      callback(null, usersRef);
     })
     .catch(err => {
       callback(err);

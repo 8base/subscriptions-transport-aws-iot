@@ -5,6 +5,10 @@ import { KeysPrefix } from './keysPrefix';
 import { SubscribeInfo } from '../../../../types';
 import * as _ from "lodash";
 
+/*
+
+*/
+
 export class RedisSubscriptionEngine implements ISubscriptionEngine {
 
   private redis: Redis.Redis;
@@ -28,13 +32,21 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
     });
   }
 
+  async clearAll(): Promise<void> {
+    await this.redis.flushall();
+  }
+
+  async activeUsers(): Promise<string[]> {
+    return await this.redis.hkeys(KeysPrefix.userStatus(UserStatus.active));
+  }
+
   async disconnect(): Promise<void> {
     return await this.redis.disconnect();
   }
 
 
   async userStatus(user: string): Promise<UserStatus> {
-    return await this.redis.get(KeysPrefix.userStatus(user)) as UserStatus;
+    return await this.redis.hget(KeysPrefix.userStatus(UserStatus.active), user) ? UserStatus.active : UserStatus.inactive;
   }
 
   async getSubscription(room: string, user: string, topic: string): Promise<SubscribeInfo> {
@@ -49,17 +61,17 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
 
   async getSubscriptions(room: string, topic: string): Promise<SubscribeInfo[]> {
     // filter active users
-    return _.chunk(await this.redis.hgetall(KeysPrefix.roomTopic(room, topic)) as string[])
-      .map<SubscribeInfo>(value => {
-        const parsed = JSON.parse(value[1]);
-        return {
-          topic,
-          room,
-          user: value[0],
-          query: parsed.query,
-          filter: parsed.filter
-        };
+    const data = await this.redis.hgetall(KeysPrefix.roomTopic(room, topic));
+    return _.transform<any, SubscribeInfo>(data, (result, subscribe: string, user: string) => {
+      const parsed = JSON.parse(subscribe);
+      result.push({
+        topic,
+        room,
+        user,
+        query: parsed.query,
+        filter: parsed.filter
       });
+    }, []);
   }
 
   async subscribeUser(room: string, user: string, topic: string, query: string, filter: string): Promise<void> {
@@ -71,11 +83,25 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
   }
 
   async setUserActive(user: string): Promise<void> {
-    return await this.redis.set(KeysPrefix.userStatus(user), UserStatus.active);
+    await this.redis.pipeline()
+      .hset(KeysPrefix.userStatus(UserStatus.active), user, "")
+      .hdel(KeysPrefix.userStatus(UserStatus.inactive), user)
+      .exec((err: Error, data: any) => {
+        if (err) {
+          throw err;
+        }
+      });
   }
 
   async setUserInactive(user: string): Promise<void> {
-    return await this.redis.set(KeysPrefix.userStatus(user), UserStatus.inactive);
+    await this.redis.pipeline()
+      .hset(KeysPrefix.userStatus(UserStatus.inactive), user, "")
+      .hdel(KeysPrefix.userStatus(UserStatus.active), user)
+      .exec((err: Error, data: any) => {
+        if (err) {
+          throw err;
+        }
+      });
   }
 
   async getSchema(): Promise<string> {
@@ -83,6 +109,6 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
   }
 
   async setSchema(schema: string): Promise<void> {
-    return await this.redis.set(KeysPrefix.schema(), schema);
+    await this.redis.set(KeysPrefix.schema(), schema);
   }
 }

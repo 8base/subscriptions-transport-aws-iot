@@ -66,12 +66,12 @@ cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (session: CognitoUserSession) => {
         const client = SubscriptionEnvironment
                 .Client
-                .create("room1", "user1")
+                .create("room1", user)
                 .transport(SubscriptionEnvironment.Transport.Iot)
                 .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
                 .client();
 
-        client.subscribe( { topic: "test-topic", room: "room1", user: "user1" }, { qos: 1 }).subscribe(observer);
+        client.subscribe( { topic: "test-topic", room: "room1", user, filter: "testfilter" }, { qos: 1 }).subscribe(observer);
     },
     onFailure: (err: Error) => {
         console.log(err);

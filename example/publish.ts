@@ -11,12 +11,13 @@ import _ = require("lodash");
 let parameters = new Map<string, string>();
 _.map(parseArgs(process.argv), (value: string, key: string) => parameters.set(key, value));
 
-
+AWS.config.region = parameters.get("region");
 Config.iotEndpoint = parameters.get("iotEndpoint");
 
 console.log("iotEndpoint = " + Config.iotEndpoint);
+console.log("region = " + AWS.config.region);
 
-ServiceEnvironment.Client.processMessage("room1", "test-topic", JSON.stringify({ data: "kokoko" }))
+PublishEnvironment.Client.sendSourceMessageToTopic("room1", "test-topic", JSON.stringify({ data: "kokoko" }))
     .then(() => {
         console.log("pusblish success");
     })

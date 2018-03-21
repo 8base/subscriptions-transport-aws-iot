@@ -2,5 +2,8 @@ import { SubscribeInfo } from "../types";
 
 export interface ISubscribeHandler {
 
-    /* async */ subscribe(info: SubscribeInfo, options: any): Promise<void>;
+    /*
+        topic separate transfer?
+    */
+    /* async */ subscribe(room: string, user: string, info: SubscribeInfo, options: any): Promise<void>;
 }

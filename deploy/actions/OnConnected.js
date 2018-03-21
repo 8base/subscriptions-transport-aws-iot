@@ -1,16 +1,19 @@
 
-const { SubscriptionEnvironment } = require("../../src");
-const config = require("./config.json");
+const { SubscriptionEnvironment, ServiceEnvironment } = require("../../src");
+const staticConfig = require("./staticConfig.json");
 
 module.exports.handler = (event, context, callback) => {
 
   console.log("event data " + JSON.stringify(event, null, 2));
   
   let engineRef = null;
-  SubscriptionEnvironment.SubscriptionEngine(config.redisEndpoint)
+  
+  const user = ServiceEnvironment.IotClientIdTransform.clientIdToUser(event.clientId);
+
+  SubscriptionEnvironment.SubscriptionEngine(staticConfig.redisEndpoint)
     .then(engine => {
       engineRef = engine;
-      return engine.setUserActive(event.user);
+      return engine.setUserActive(user);
     })
     .then(() => {
       return engineRef.disconnect();

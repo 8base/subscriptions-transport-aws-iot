@@ -22,3 +22,12 @@ export async function deployFlow(config: string, role: string) {
     await Promise.all(rules.map( async r => await AwsRules.deploy(iot, lambda, r, uploadedFunctions)));
 
 }
+
+export async function undeployFlow() {
+
+    const lambda = new aws.Lambda();
+    await Promise.all(functions.map( async f => await AwsFunctions.undeploy(lambda, f.name)));
+
+    const iot = new aws.Iot();
+    await Promise.all(rules.map( async r => await AwsRules.undeploy(iot, r)));
+}

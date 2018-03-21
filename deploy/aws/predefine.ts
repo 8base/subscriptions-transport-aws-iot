@@ -1,6 +1,7 @@
 import { ruleT, functionT } from "./types";
 import * as path from "path";
-import { PredefineTopicPrefix } from '../../src/classes';
+import { PredefineTopics } from '../../src/classes';
+
 
 export const functions: functionT[] = [
     {
@@ -42,6 +43,21 @@ export const functions: functionT[] = [
       name: "OnSetSchema",
       arn: "",
       handler: "index.OnSetSchema"
+    },
+    {
+      name: "GetActiveClients",
+      arn: "",
+      handler: "index.GetActiveClients"
+    },
+    {
+      name: "ClearAll",
+      arn: "",
+      handler: "index.ClearAll"
+    },
+    {
+      name: "PublishToTopic",
+      arn: "",
+      handler: "index.PublishToTopic"
     }
 ];
 
@@ -49,12 +65,12 @@ export const rules: ruleT[] = [
     {
       functionName: "OnNewMessage",
       name: "OnNewMessage",
-      sql: `SELECT * FROM '${PredefineTopicPrefix.onNewMessage}'`
+      sql: `SELECT * FROM '${PredefineTopics.onNewMessage}/#'`
     },
     {
       functionName: "OnNewSubscribe",
       name: "OnNewSubscribe",
-      sql: `SELECT * FROM '${PredefineTopicPrefix.onNewSubscribe}'`
+      sql: `SELECT * FROM '${PredefineTopics.onNewSubscribe}'`
     },
     {
       functionName: "OnConnected",
@@ -69,6 +85,6 @@ export const rules: ruleT[] = [
     {
       functionName: "OnSetSchema",
       name: "OnSetSchema",
-      sql: `SELECT * FROM '${PredefineTopicPrefix.onSetSchema}'`
+      sql: `SELECT * FROM '${PredefineTopics.onSetSchema}'`
     }
 ];
