@@ -16,7 +16,8 @@
     "upload": "npm version patch && git push --follow-tags",
     "preversion": "npm run tslint",
     "attach-policy": "node ./lib/actions/attach-policy.js",
-    "install-subscription-engine": "node ./lib/deploy/deployAws"
+    "install-subscription-engine": "node ./lib/deploy/deployAws",
+    "uninstall": "node ./lib/deploy/undeployAws"
   },
   "jest": {
     "globals": {
