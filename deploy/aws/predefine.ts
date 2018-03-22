@@ -7,57 +7,68 @@ export const functions: functionT[] = [
     {
       name: "OnConnected",
       arn: "",
-      handler: "index.OnConnected"
+      handler: "index.OnConnected",
+      publicAccess: false
     },
     {
       name: "OnDisconnected",
       arn: "",
-      handler: "index.OnDisconnected"
+      handler: "index.OnDisconnected",
+      publicAccess: false
     },
     {
       name: "OnNewMessage",
       arn: "",
-      handler: "index.OnNewMessage"
+      handler: "index.OnNewMessage",
+      publicAccess: true
     },
     {
       name: "GetClient",
       arn: "",
-      handler: "index.GetClient"
+      handler: "index.GetClient",
+      publicAccess: false
     },
     {
       name: "GetSubscription",
       arn: "",
-      handler: "index.GetSubscription"
+      handler: "index.GetSubscription",
+      publicAccess: false
     },
     {
       name: "GetSubscriptions",
       arn: "",
-      handler: "index.GetSubscriptions"
+      handler: "index.GetSubscriptions",
+      publicAccess: false
     },
     {
       name: "OnNewSubscribe",
       arn: "",
-      handler: "index.OnNewSubscribe"
+      handler: "index.OnNewSubscribe",
+      publicAccess: false
     },
     {
       name: "OnSetSchema",
       arn: "",
-      handler: "index.OnSetSchema"
+      handler: "index.OnSetSchema",
+      publicAccess: false
     },
     {
       name: "GetActiveClients",
       arn: "",
-      handler: "index.GetActiveClients"
+      handler: "index.GetActiveClients",
+      publicAccess: false
     },
     {
       name: "ClearAll",
       arn: "",
-      handler: "index.ClearAll"
+      handler: "index.ClearAll",
+      publicAccess: false
     },
     {
       name: "PublishToTopic",
       arn: "",
-      handler: "index.PublishToTopic"
+      handler: "index.PublishToTopic",
+      publicAccess: true
     }
 ];
 

@@ -17,7 +17,7 @@ Config.iotEndpoint = parameters.get("iotEndpoint");
 console.log("iotEndpoint = " + Config.iotEndpoint);
 console.log("region = " + AWS.config.region);
 
-PublishEnvironment.Client.sendSourceMessageToTopic("room1", "test-topic", JSON.stringify({ data: "kokoko" }))
+PublishEnvironment.Client.sendSourceMessageToTopic("room1", "test-topic", JSON.stringify({ data: " { \"kokoko\": \"ololo\" } " }))
     .then(() => {
         console.log("pusblish success");
     })

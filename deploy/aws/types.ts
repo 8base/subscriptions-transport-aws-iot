@@ -1,7 +1,8 @@
 export type functionT = {
     name: string,
     arn: string,
-    handler: string
+    handler: string,
+    publicAccess: boolean;
 };
 
 export type ruleT = {

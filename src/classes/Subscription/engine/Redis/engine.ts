@@ -64,13 +64,14 @@ export class RedisSubscriptionEngine implements ISubscriptionEngine {
     const data = await this.redis.hgetall(KeysPrefix.roomTopic(room, topic));
     return _.transform<any, SubscribeInfo>(data, (result, subscribe: string, user: string) => {
       const parsed = JSON.parse(subscribe);
-      result.push({
-        topic,
-        room,
-        user,
-        query: parsed.query,
-        filter: parsed.filter
-      });
+      let subscription = new SubscribeInfo();
+      subscription.room = room;
+      subscription.user = user;
+      subscription.filter = parsed.filter;
+      subscription.topic = topic;
+      subscription.query = parsed.query;
+
+      result.push(subscription);
     }, []);
   }
 

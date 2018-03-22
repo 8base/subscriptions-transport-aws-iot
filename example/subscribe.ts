@@ -7,6 +7,7 @@ import { } from "graphql";
 
 import * as parseArgs from "minimist";
 import * as _ from "lodash";
+import { SubscribeInfo } from "../src";
 
 const observer = {
     next: (data: any) => {
@@ -71,7 +72,12 @@ cognitoUser.authenticateUser(authenticationDetails, {
                 .authResolver(SubscriptionEnvironment.Auth.Cognito(session.getIdToken().getJwtToken()))
                 .client();
 
-        client.subscribe( { topic: "test-topic", room: "room1", user, filter: "testfilter" }, { qos: 1 }).subscribe(observer);
+        let subscription = new SubscribeInfo();
+        subscription.room = "room1";
+        subscription.user = user;
+        subscription.filter = "testfilter";
+        subscription.topic = "test-topic";
+        client.subscribe( subscription, { qos: 1 }).subscribe(observer);
     },
     onFailure: (err: Error) => {
         console.log(err);

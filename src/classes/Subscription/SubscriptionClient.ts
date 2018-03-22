@@ -5,6 +5,7 @@ import { SubscribeInfo } from "../../types";
 import { TopicObservable } from '../Topic';
 import { IClientSubscribeOptions } from 'mqtt';
 import { Observable } from "zen-observable-ts";
+import { PredefineTopics } from '../Topic';
 
 export class SubscriptionClient {
 
@@ -37,15 +38,16 @@ export class SubscriptionClient {
     }
 
     subscribe(info: SubscribeInfo, options: IClientSubscribeOptions): Observable<FetchResult> {
+        info.room = this.room;
+        info.user = this.user;
+        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.fullTopic));
 
-        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.topic));
-
-        Promise.all(this.handlers.map(handler => handler.subscribe(this.room, this.user, info, options)))
+        Promise.all(this.handlers.map(handler => handler.subscribe(info, options)))
             .catch((err: Error) => {
                 observable.onError(err);
             });
 
-        this.observables.set(info.topic, observable);
+        this.observables.set(info.fullTopic, observable);
         return observable;
     }
 
@@ -55,8 +57,10 @@ export class SubscriptionClient {
 
     private onReceive(topic: string, data: any) {
         const resp = this.processResponce(data);
-        if (resp)
-            this.observables.get(topic).onData(resp);
+        const handler = this.observables.get(topic);
+        if (resp && handler) {
+            handler.onData(resp);
+        }
     }
 
     private onClose(reason: Error) {

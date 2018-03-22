@@ -14,8 +14,8 @@ export class OnSubscribeIotTopic implements ISubscribeHandler {
         this.client = client;
     }
 
-    async subscribe(room: string, user: string, info: SubscribeInfo, options: any): Promise<void> {
-        await this.client.subscribe(PredefineTopics.publicTopic(room, user, info.topic), options);
+    async subscribe(info: SubscribeInfo, options: any): Promise<void> {
+        await this.client.subscribe(info.fullTopic, options);
     }
 
 }

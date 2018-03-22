@@ -7,12 +7,10 @@ import { Operation } from "apollo-link";
 
 export function ApolloLinkOperationToSubscribeInfo(operation: Operation): SubscribeInfo {
 
-    return {
-        query: operation.query,
-        topic: queryToTopic(operation.query),
-        user: "",
-        room: ""
-    };
+    let subscription = new SubscribeInfo();
+    subscription.query = operation.query;
+    subscription.topic = queryToTopic(operation.query);
+    return subscription;
 }
 
 

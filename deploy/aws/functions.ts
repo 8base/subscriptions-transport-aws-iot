@@ -4,7 +4,12 @@ import * as fs from "fs";
 
 export namespace AwsFunctions {
 
-    export async function deploy(lambda: aws.Lambda, archivePath: string, func: functionT, role: string) {
+    export async function deploy(lambda: aws.Lambda, archivePath: string, func: functionT, role: string): Promise<functionT> {
+        const subnets = ["subnet-ac5bb5e6"];
+        if (func.publicAccess) {
+            subnets.push("subnet-ab5d9ae1");
+        }
+
         let req: aws.Lambda.Types.CreateFunctionRequest;
         req = {
             FunctionName: func.name,
@@ -15,7 +20,7 @@ export namespace AwsFunctions {
                 ZipFile: fs.readFileSync(archivePath)
             },
             VpcConfig: {
-              SubnetIds: ["subnet-ca712ff5", "subnet-ac5bb5e6"],
+              SubnetIds: subnets,
               SecurityGroupIds: ["sg-6ebc6e18"]
             },
             MemorySize: 512
@@ -23,11 +28,13 @@ export namespace AwsFunctions {
 
         const resp = await lambda.createFunction(req).promise();
         console.log("deploy function " + func.name + " complete: arn = " + resp.FunctionArn);
+        console.log("subnets = " + JSON.stringify(subnets));
 
         return {
-          name: func.name,
-          arn: resp.FunctionArn,
-          handler: func.handler
+            name: func.name,
+            arn: resp.FunctionArn,
+            handler: func.handler,
+            publicAccess: func.publicAccess
         };
     }
 

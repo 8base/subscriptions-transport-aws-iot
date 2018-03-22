@@ -1,4 +1,3 @@
-import { DocumentNode } from 'graphql';
 
 
 export interface IObserver<T> {
@@ -13,17 +12,6 @@ export interface ConnectOptions {
 
 }
 
-/*
-    room
-*/
-
-export interface SubscribeInfo {
-    query?: DocumentNode;
-    filter?: string;
-    topic: string;
-    room: string;
-    user: string;
-}
 
 export enum MessageType {
     Table = 'Table',
