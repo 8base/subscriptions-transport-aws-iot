@@ -2,9 +2,10 @@
 import { ApolloLink, Operation, NextLink, FetchResult } from "apollo-link";
 import { ISubscribeHandler, IMqttClient, IConnectOptionsResolver } from "../../interfaces";
 import { SubscribeInfo } from "../../types";
-import { TopicObservable } from '../Common';
+import { TopicObservable } from '../Topic';
 import { IClientSubscribeOptions } from 'mqtt';
 import { Observable } from "zen-observable-ts";
+import { PredefineTopics } from '../Topic';
 
 export class SubscriptionClient {
 
@@ -19,10 +20,15 @@ export class SubscriptionClient {
     */
     private observables: Map<string, TopicObservable<FetchResult>> = new Map();
 
-    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[]) {
+    private user: string;
+    private room: string;
+
+    constructor(resolver: IConnectOptionsResolver, mqttClient: IMqttClient, handlers: ISubscribeHandler[], room: string, user: string) {
         this.resolver = resolver;
         this.mqttClient = mqttClient;
         this.handlers = handlers;
+        this.room = room;
+        this.user = user;
 
         this.mqttClient.connect(
             this.resolver,
@@ -32,14 +38,16 @@ export class SubscriptionClient {
     }
 
     subscribe(info: SubscribeInfo, options: IClientSubscribeOptions): Observable<FetchResult> {
-        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.topic));
+        info.room = this.room;
+        info.user = this.user;
+        const observable = new TopicObservable<FetchResult>(this.onRemoveObservable.bind(this, info.fullTopic));
 
         Promise.all(this.handlers.map(handler => handler.subscribe(info, options)))
             .catch((err: Error) => {
                 observable.onError(err);
             });
 
-        this.observables.set(info.topic, observable);
+        this.observables.set(info.fullTopic, observable);
         return observable;
     }
 
@@ -49,8 +57,10 @@ export class SubscriptionClient {
 
     private onReceive(topic: string, data: any) {
         const resp = this.processResponce(data);
-        if (resp)
-            this.observables.get(topic).onData(resp);
+        const handler = this.observables.get(topic);
+        if (resp && handler) {
+            handler.onData(resp);
+        }
     }
 
     private onClose(reason: Error) {

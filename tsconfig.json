@@ -10,21 +10,22 @@
         "experimentalDecorators": true,        
         "outDir": "lib",
         "baseUrl": ".",
-        "sourceMap": true,
+        "sourceMap": false,
         "allowJs": true,
         "typeRoots": [
             "node_modules/@types"
         ],        
         "paths": {
             "*": [
-                "types/*"
+                "src/types/*"
             ]
         }
     },
     "include": [
         "example",
         "src",
-        "actions"
+        "actions",
+        "deploy"
     ],
     "exclude": [
         "dist",

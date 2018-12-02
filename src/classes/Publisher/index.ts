@@ -1,15 +1,20 @@
 import { IPublisherClient } from '../../interfaces';
 import * as aws from "aws-sdk";
 import { Config } from '../../config';
+import * as path from "path";
 
 export class Publisher implements IPublisherClient {
 
-    async publish(topic: string, payload: Buffer): Promise<void> {
+    async publish(topic: string, payload: any): Promise<void> {
+
+        // TODO protect publish topic
+        console.log(Config.iotEndpoint);
+
         const iotData = new aws.IotData({ endpoint: Config.iotEndpoint });
         await iotData.publish({
             topic,
-            payload
+            payload: JSON.stringify(payload),
+            qos: 0
         }).promise();
     }
-
 }

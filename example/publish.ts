@@ -1,30 +1,27 @@
 
-import { PublisherEnvironment } from "../src/factories";
+import { PublishEnvironment, ServiceEnvironment } from "../src/factories";
 import { Config } from "../src/config";
 import { CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails, CognitoUserSession } from 'amazon-cognito-identity-js';
 import * as AWS from "aws-sdk";
 import "isomorphic-fetch";
+import * as parseArgs from "minimist";
+import _ = require("lodash");
 
 
-/*
-    setup process environment
- */
+let parameters = new Map<string, string>();
+_.map(parseArgs(process.argv), (value: string, key: string) => parameters.set(key, value));
 
-process.env.AWS_IOT_ENDPOINT = "";
-process.env.AWS_REGION = "";
-process.env.AWS_USER_POOL_ID = "";
-process.env.AWS_CLIENT_ID = "";
-process.env.AWS_IDENTITY_POOL_ID = "";
-process.env.DEBUG_MQTT_CLIENT = "true";
+AWS.config.region = parameters.get("region");
+Config.iotEndpoint = parameters.get("iotEndpoint");
 
-if (process.argv.length < 4) {
-    console.log("invalid argument");
-    process.exit(0);
-}
+console.log("iotEndpoint = " + Config.iotEndpoint);
+console.log("region = " + AWS.config.region);
 
-const topic = process.argv[2];
-const payload = process.argv[3];
+PublishEnvironment.Client.sendSourceMessageToTopic("room1", "test-topic", JSON.stringify({ data: " { \"kokoko\": \"ololo\" } " }))
+    .then(() => {
+        console.log("pusblish success");
+    })
+    .catch((err: Error) => {
+        console.log(err.message);
+    });
 
-PublisherEnvironment.publish(topic, payload);
-
-console.log("pusblish success");
