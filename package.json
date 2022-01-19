@@ -49,7 +49,7 @@
     "websocket-stream": "^5.1.2",
     "amazon-cognito-identity-js": "^2.0.1",
     "aws-iot-device-sdk": "^2.2.1",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "graphql": "^0.13.1"
   },
   "devDependencies": {
